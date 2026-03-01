@@ -7,7 +7,7 @@ SHEET_EMBED  = "https://docs.google.com/spreadsheets/d/1QcAuW2CIVvVv03asnwpj32Av
 
 st.set_page_config(page_title="Embalagio CRM", page_icon="📦", layout="wide")
 
-# ─── FUNÇÕES PARA IMAGENS ───
+# ─── FUNÇÃO PARA A LOGO ───
 def get_img_as_base64(file_path):
     try:
         with open(file_path, 'rb') as f:
@@ -15,10 +15,9 @@ def get_img_as_base64(file_path):
     except:
         return ""
 
-bg_b64 = get_img_as_base64("fundo-chat.jpg")
 logo_b64 = get_img_as_base64("logo_embalagio.png")
 
-# ─── CSS GLOBAL COM NOVA PALETA ───
+# ─── CSS GLOBAL ───
 st.markdown(f"""
 <style>
 /* Fundo Geral */
@@ -26,7 +25,7 @@ st.markdown(f"""
 
 h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
 
-/* Destaques na Cor da Marca (Novo Laranja) */
+/* Destaques na Cor da Marca */
 .brand-text {{ color: #FF6A00 !important; }}
 
 /* Botão de Enviar Principal */
@@ -39,24 +38,35 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
     padding: 12px 0 !important;
     transition: all 0.3s ease;
 }}
-/* Hover do Botão e Efeito Glow */
 .stButton > button:hover {{ 
     background: #FF7A1A !important; 
     box-shadow: 0 0 10px #FF6A00 !important;
 }}
 
-/* Inputs e Selectbox (Cards) */
+/* Correção do Botão "Sobre este Projeto" e "Limpar" */
+button[kind="secondary"] {{
+    background-color: transparent !important;
+    color: #f0f0f0 !important;
+    border: 1px solid #FF6A00 !important;
+    box-shadow: none !important;
+}}
+button[kind="secondary"]:hover {{
+    background-color: #0E2A3A !important;
+    color: #FF6A00 !important;
+    border: 1px solid #FF6A00 !important;
+    box-shadow: 0 0 8px rgba(255, 106, 0, 0.4) !important;
+}}
+
+/* Inputs e Selectbox */
 .stSelectbox div[data-baseweb="select"] {{ 
     border-color: #FF6A00 !important; 
     background-color: #0E2A3A !important; 
     color: #f0f0f0 !important; 
-    transition: box-shadow 0.3s ease;
 }}
 .stTextArea textarea {{ 
     border-color: #FF6A00 !important; 
     background-color: #0E2A3A !important; 
     color: #f0f0f0 !important; 
-    transition: box-shadow 0.3s ease;
 }}
 
 /* Bordas Ativas / Glow nos campos de texto */
@@ -66,7 +76,7 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
     outline: none !important;
 }}
 
-/* Painel do Chat (Card) */
+/* Painel do Chat */
 .chat-panel {{ 
     background-color: #0E2A3A; 
     border: 1px solid #FF6A00; 
@@ -75,7 +85,7 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
     height: 400px; 
     display: flex; 
     flex-direction: column; 
-    box-shadow: 0 0 5px rgba(255, 106, 0, 0.2); /* Glow sutil na borda */
+    box-shadow: 0 0 5px rgba(255, 106, 0, 0.2);
 }}
 
 .chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px; }}
@@ -89,16 +99,6 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
 
 #MainMenu, footer, header {{ visibility: hidden; }}
 .block-container {{ padding-top: 1rem !important; max-width: 1200px; }}
-
-/* Ajustes Mobile */
-@media (max-width: 768px) {{
-    .chat-panel {{ 
-        background-image: url("data:image/jpeg;base64,{bg_b64}");
-        background-size: cover;
-        background-position: center;
-        background-blend-mode: overlay;
-    }}
-}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -130,17 +130,17 @@ else:
     badge_color = "#f87171"
     badge_text  = "○ SISTEMA OFFLINE"
 
-# ─── CABEÇALHO FLEXBOX (Responsivo) ───
+# ─── CABEÇALHO (Largura Total e Efeito Glow) ───
 st.markdown(f"""
-<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 2px solid #FF6A00; margin-bottom: 15px; box-shadow: 0 4px 10px -5px #FF6A00;">
-    <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="data:image/png;base64,{logo_b64}" style="width: 65px; border-radius: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 2px solid #FF6A00; margin-bottom: 25px; box-shadow: 0 4px 15px -5px #FF6A00; width: 100%;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <img src="data:image/png;base64,{logo_b64}" style="width: 80px; border-radius: 8px;">
         <div>
-            <h1 style="color: #FF6A00; font-size: 1.25rem; margin: 0; font-weight: 900; line-height: 1; text-shadow: 0 0 5px rgba(255, 106, 0, 0.4);">PORTAL DE ATENDIMENTO</h1>
-            <p style="color: #888; font-size: 0.75rem; margin: 0; font-family: monospace;">Triagem de leads · IA WhatsApp</p>
+            <h1 style="color: #FF6A00; font-size: 1.4rem; margin: 0; font-weight: 900; line-height: 1.2; text-shadow: 0 0 5px rgba(255, 106, 0, 0.4);">PORTAL DE ATENDIMENTO</h1>
+            <p style="color: #888; font-size: 0.8rem; margin: 0; font-family: monospace;">Triagem de leads · IA WhatsApp · Powered by Groq + Llama 3.3</p>
         </div>
     </div>
-    <div style="background-color: {badge_bg}; border: 1px solid {badge_border}; color: {badge_color}; padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-family: monospace; font-weight: bold; white-space: nowrap;">
+    <div style="background-color: {badge_bg}; border: 1px solid {badge_border}; color: {badge_color}; padding: 6px 12px; border-radius: 20px; font-size: 0.7rem; font-family: monospace; font-weight: bold; white-space: nowrap;">
         {badge_text}
     </div>
 </div>
@@ -164,9 +164,9 @@ st.write("")
 col1, col2 = st.columns([1, 1.3], gap="large")
 
 with col1:
-    chat_head_col1, chat_head_col2 = st.columns([4, 1], vertical_alignment="center")
+    chat_head_col1, chat_head_col2 = st.columns([3, 1.2], vertical_alignment="center")
     chat_head_col1.markdown('<p class="brand-text" style="font-family: monospace; font-weight: bold; text-transform: uppercase; margin: 0;">💬 Chat de Atendimento</p>', unsafe_allow_html=True)
-    if chat_head_col2.button("🗑️", help="Limpar conversa"):
+    if chat_head_col2.button("🗑️ Limpar", use_container_width=True):
         st.session_state.history = []
         st.rerun()
 
@@ -210,7 +210,7 @@ with col1:
     if st.button("ENVIAR MENSAGEM ➜", use_container_width=True):
         if user_input.strip():
             st.session_state.history.append({"role": "user", "text": user_input.strip()})
-            with st.spinner("IA da Embalagio está digitando..."):
+            with st.spinner("Processando Inteligência Artificial..."):
                 try:
                     r = requests.post(WEBHOOK_URL, json={"message": user_input.strip()}, timeout=45)
                     if r.status_code == 200:
@@ -247,13 +247,13 @@ with col2:
 st.markdown("---")
 st.markdown('<h3 class="brand-text" style="text-align: center; margin-bottom: 20px;">🔍 Arquitetura Técnica (Backend Automatizado)</h3>', unsafe_allow_html=True)
 st.image("workflow_n8n.png", use_container_width=True)
-st.markdown('<p style="text-align: center; font-size: 0.8rem; color: #888;">*(Dica: se estiver no celular, clique na imagem para ampliar e arrastar)*</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; font-size: 0.8rem; color: #888;">*(Clique na imagem para ampliar e arrastar)*</p>', unsafe_allow_html=True)
 
-# ─── RODAPÉ / CRÉDITOS ───
+# ─── RODAPÉ PROFISSIONAL ───
 st.markdown("""
-<div style="text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid #222;">
+<div style="text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid #1a3c54;">
     <p style="color: #888; font-size: 0.85rem; font-family: monospace;">
-        &lt;/&gt; Desenvolvido com 🧡 por <b style="color: #FF6A00; text-shadow: 0 0 5px rgba(255,106,0,0.4);">Emmanuel</b>
+        &lt;/&gt; Sistema de Triagem Automatizada | Desenvolvido por <b style="color: #FF6A00; text-shadow: 0 0 5px rgba(255,106,0,0.4);">Emmanuel</b>
     </p>
 </div>
 """, unsafe_allow_html=True)
