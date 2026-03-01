@@ -18,41 +18,64 @@ def get_img_as_base64(file_path):
 bg_b64 = get_img_as_base64("fundo-chat.jpg")
 logo_b64 = get_img_as_base64("logo_embalagio.png")
 
-# ─── CSS GLOBAL ───
+# ─── CSS GLOBAL COM NOVA PALETA ───
 st.markdown(f"""
 <style>
-/* Tema Dark Padrão */
-.stApp, .stApp > header {{ background-color: #0f0f0f !important; }}
+/* Fundo Geral */
+.stApp, .stApp > header {{ background-color: #0A1F2C !important; }}
 
 h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
 
-/* Destaques na Cor da Marca */
-.brand-text {{ color: #e85d04 !important; }}
+/* Destaques na Cor da Marca (Novo Laranja) */
+.brand-text {{ color: #FF6A00 !important; }}
 
-/* Botão de Enviar Laranja */
+/* Botão de Enviar Principal */
 .stButton > button {{ 
-    background: #e85d04 !important; 
+    background: #FF6A00 !important; 
     color: #ffffff !important; 
     border: none !important; 
     border-radius: 8px !important; 
     font-weight: 800 !important; 
     padding: 12px 0 !important;
+    transition: all 0.3s ease;
 }}
-.stButton > button:hover {{ background: #cf4f00 !important; }}
+/* Hover do Botão e Efeito Glow */
+.stButton > button:hover {{ 
+    background: #FF7A1A !important; 
+    box-shadow: 0 0 10px #FF6A00 !important;
+}}
 
-/* Inputs e Selectbox */
-.stSelectbox div[data-baseweb="select"] {{ border-color: #e85d04 !important; background-color: #1a1a1a !important; color: #f0f0f0 !important; }}
-.stTextArea textarea {{ border-color: #e85d04 !important; background-color: #1a1a1a !important; color: #f0f0f0 !important; }}
+/* Inputs e Selectbox (Cards) */
+.stSelectbox div[data-baseweb="select"] {{ 
+    border-color: #FF6A00 !important; 
+    background-color: #0E2A3A !important; 
+    color: #f0f0f0 !important; 
+    transition: box-shadow 0.3s ease;
+}}
+.stTextArea textarea {{ 
+    border-color: #FF6A00 !important; 
+    background-color: #0E2A3A !important; 
+    color: #f0f0f0 !important; 
+    transition: box-shadow 0.3s ease;
+}}
 
-/* Painel do Chat - Desktop (Sem Wallpaper) e Mobile (Com Wallpaper) */
+/* Bordas Ativas / Glow nos campos de texto */
+.stSelectbox div[data-baseweb="select"]:focus-within, 
+.stTextArea textarea:focus {{
+    box-shadow: 0 0 10px #FF6A00 !important;
+    outline: none !important;
+}}
+
+/* Painel do Chat (Card) */
 .chat-panel {{ 
-    background-color: #0b141a; 
-    border: 1px solid #2a2a2a; 
+    background-color: #0E2A3A; 
+    border: 1px solid #FF6A00; 
     border-radius: 12px; 
     padding: 15px; 
     height: 400px; 
     display: flex; 
     flex-direction: column; 
+    box-shadow: 0 0 5px rgba(255, 106, 0, 0.2); /* Glow sutil na borda */
 }}
 
 .chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px; }}
@@ -109,11 +132,11 @@ else:
 
 # ─── CABEÇALHO FLEXBOX (Responsivo) ───
 st.markdown(f"""
-<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 2px solid #e85d04; margin-bottom: 15px;">
+<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 2px solid #FF6A00; margin-bottom: 15px; box-shadow: 0 4px 10px -5px #FF6A00;">
     <div style="display: flex; align-items: center; gap: 12px;">
         <img src="data:image/png;base64,{logo_b64}" style="width: 65px; border-radius: 8px;">
         <div>
-            <h1 style="color: #e85d04; font-size: 1.25rem; margin: 0; font-weight: 900; line-height: 1;">PORTAL DE ATENDIMENTO</h1>
+            <h1 style="color: #FF6A00; font-size: 1.25rem; margin: 0; font-weight: 900; line-height: 1; text-shadow: 0 0 5px rgba(255, 106, 0, 0.4);">PORTAL DE ATENDIMENTO</h1>
             <p style="color: #888; font-size: 0.75rem; margin: 0; font-family: monospace;">Triagem de leads · IA WhatsApp</p>
         </div>
     </div>
@@ -216,10 +239,10 @@ with col1:
 with col2:
     st.markdown('<p class="brand-text" style="font-family: monospace; font-weight: bold; text-transform: uppercase; margin: 0 0 10px 0;">📊 CRM — Leads em Tempo Real</p>', unsafe_allow_html=True)
     st.markdown(
-        f'<div style="border: 2px solid #e85d04; border-radius: 12px; overflow: hidden; line-height: 0;"><iframe src="{SHEET_EMBED}" width="100%" height="600" frameborder="0" style="border-radius: 10px;"></iframe></div>',
+        f'<div style="background-color: #0E2A3A; border: 2px solid #FF6A00; border-radius: 12px; overflow: hidden; line-height: 0; box-shadow: 0 0 8px rgba(255, 106, 0, 0.3);"><iframe src="{SHEET_EMBED}" width="100%" height="600" frameborder="0" style="border-radius: 10px;"></iframe></div>',
         unsafe_allow_html=True
     )
-    st.markdown('<p style="font-size: 0.75rem; color: #666; text-align: right; margin-top: 5px; font-family: monospace;">Atualização em tempo real · Google Sheets</p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-size: 0.75rem; color: #888; text-align: right; margin-top: 5px; font-family: monospace;">Atualização em tempo real · Google Sheets</p>', unsafe_allow_html=True)
 
 st.markdown("---")
 st.markdown('<h3 class="brand-text" style="text-align: center; margin-bottom: 20px;">🔍 Arquitetura Técnica (Backend Automatizado)</h3>', unsafe_allow_html=True)
@@ -229,8 +252,8 @@ st.markdown('<p style="text-align: center; font-size: 0.8rem; color: #888;">*(Di
 # ─── RODAPÉ / CRÉDITOS ───
 st.markdown("""
 <div style="text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid #222;">
-    <p style="color: #666; font-size: 0.85rem; font-family: monospace;">
-        &lt;/&gt; Desenvolvido com 🧡 por <b style="color: #e85d04;">Emmanuel</b>
+    <p style="color: #888; font-size: 0.85rem; font-family: monospace;">
+        &lt;/&gt; Desenvolvido com 🧡 por <b style="color: #FF6A00; text-shadow: 0 0 5px rgba(255,106,0,0.4);">Emmanuel</b>
     </p>
 </div>
 """, unsafe_allow_html=True)
