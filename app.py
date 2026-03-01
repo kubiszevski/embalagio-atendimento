@@ -79,8 +79,12 @@ if "n8n_online" not in st.session_state:
 # ─── CHECAR SE N8N ESTÁ ONLINE ────────────────────────────────────────────────
 def check_n8n():
     try:
-        r = requests.post(WEBHOOK_URL, json={"message": "__ping__"}, timeout=3)
-        return r.status_code == 200
+        r = requests.post(WEBHOOK_URL, json={"message": "__ping__"}, timeout=5)
+        if r.status_code == 200:
+            # Só dá como ATIVO se a resposta for um JSON válido
+            r.json() 
+            return True
+        return False
     except:
         return False
 
