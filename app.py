@@ -23,7 +23,7 @@ st.markdown(f"""
 <style>
 /* Fundo Creme e Cor Laranja Global */
 .stApp, .stApp > header {{ 
-    background-color: #d6d4ab !important; /* #CARIOTECA (Altere o HEX aqui se quiser mudar a cor de fundo) */
+    background-color: #FDFBD4 !important; /* #CARIOTECA (Altere o HEX aqui se quiser mudar a cor de fundo) */
 }}
 
 h1, h2, h3, p, label, li, span {{ 
