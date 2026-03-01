@@ -15,206 +15,52 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 
-*, html, body, [class*="css"] {
-    font-family: 'Nunito', sans-serif !important;
-    box-sizing: border-box;
-}
-
-.stApp {
-    background: #0f0f0f;
-    color: #f0f0f0;
-}
+*, html, body, [class*="css"] { font-family: 'Nunito', sans-serif !important; box-sizing: border-box; }
+.stApp { background: #0f0f0f; color: #f0f0f0; }
 
 /* ── HEADER ── */
-.emb-header {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    padding: 28px 0 8px 0;
-    border-bottom: 2px solid #e85d04;
-    margin-bottom: 28px;
-}
-.emb-logo {
-    width: 130px;
-    border-radius: 12px;
-}
-.emb-title-block h1 {
-    font-size: 1.05rem;
-    font-weight: 900;
-    color: #e85d04;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin: 0 0 2px 0;
-}
-.emb-title-block p {
-    font-size: 0.82rem;
-    color: #888;
-    margin: 0;
-    font-family: 'Space Mono', monospace !important;
-}
-.emb-badge {
-    margin-left: auto;
-    background: #1a1a1a;
-    border: 1px solid #e85d04;
-    color: #e85d04;
-    font-size: 0.72rem;
-    font-family: 'Space Mono', monospace !important;
-    padding: 5px 12px;
-    border-radius: 20px;
-    letter-spacing: 0.08em;
-}
+.emb-header { display: flex; align-items: center; gap: 18px; padding: 28px 0 8px 0; border-bottom: 2px solid #e85d04; margin-bottom: 28px; }
+.emb-logo { width: 130px; border-radius: 12px; }
+.emb-title-block h1 { font-size: 1.05rem; font-weight: 900; color: #e85d04; letter-spacing: 0.12em; text-transform: uppercase; margin: 0 0 2px 0; }
+.emb-title-block p { font-size: 0.82rem; color: #888; margin: 0; font-family: 'Space Mono', monospace !important; }
+.emb-badge { margin-left: auto; background: #1a1a1a; border: 1px solid #e85d04; color: #e85d04; font-size: 0.72rem; font-family: 'Space Mono', monospace !important; padding: 5px 12px; border-radius: 20px; letter-spacing: 0.08em; display:flex; align-items:center; gap:8px;}
+.refresh-btn { cursor:pointer; background:none; border:none; color:inherit; font-size:1rem; padding:0; margin:0;}
 
 /* ── SECTION LABELS ── */
-.section-label {
-    font-size: 0.7rem;
-    font-family: 'Space Mono', monospace !important;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #e85d04;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: #2a2a2a;
-}
+.section-label { font-size: 0.7rem; font-family: 'Space Mono', monospace !important; letter-spacing: 0.15em; text-transform: uppercase; color: #e85d04; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: #2a2a2a; }
 
 /* ── CHAT PANEL ── */
-.chat-panel {
-    background: #141414;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
-    padding: 20px;
-    min-height: 460px;
-    display: flex;
-    flex-direction: column;
-}
-.chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    max-height: 340px;
-    padding-right: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-.chat-empty {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #333;
-    font-size: 0.85rem;
-    font-family: 'Space Mono', monospace;
-    text-align: center;
-    line-height: 2;
-}
+.chat-panel { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 20px; min-height: 460px; display: flex; flex-direction: column; }
+.chat-messages { flex: 1; overflow-y: auto; max-height: 340px; padding-right: 4px; display: flex; flex-direction: column; gap: 14px; }
+.chat-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: #333; font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; line-height: 2; }
 
 /* ── BUBBLES ── */
 .msg-user { display: flex; justify-content: flex-end; }
 .msg-ai   { display: flex; justify-content: flex-start; }
-
-.bubble {
-    max-width: 80%;
-    padding: 11px 16px;
-    font-size: 0.88rem;
-    line-height: 1.6;
-    word-wrap: break-word;
-}
-.bubble-user {
-    background: #e85d04;
-    color: #fff;
-    border-radius: 16px 16px 4px 16px;
-    font-weight: 600;
-}
-.bubble-ai {
-    background: #1e1e1e;
-    color: #e0e0e0;
-    border-radius: 16px 16px 16px 4px;
-    border: 1px solid #2e2e2e;
-}
-.bubble-label {
-    font-size: 0.68rem;
-    font-family: 'Space Mono', monospace;
-    color: #555;
-    margin-bottom: 4px;
-}
+.bubble { max-width: 80%; padding: 11px 16px; font-size: 0.88rem; line-height: 1.6; word-wrap: break-word; }
+.bubble-user { background: #e85d04; color: #fff; border-radius: 16px 16px 4px 16px; font-weight: 600; }
+.bubble-ai { background: #1e1e1e; color: #e0e0e0; border-radius: 16px 16px 16px 4px; border: 1px solid #2e2e2e; }
+.bubble-label { font-size: 0.68rem; font-family: 'Space Mono', monospace; color: #555; margin-bottom: 4px; }
 .bubble-label-right { text-align: right; }
+.chat-divider { height: 1px; background: #1e1e1e; margin: 16px 0; }
 
-/* ── DIVIDER ── */
-.chat-divider {
-    height: 1px;
-    background: #1e1e1e;
-    margin: 16px 0;
-}
-
-/* ── INPUT ── */
-.stTextArea > div > div > textarea {
-    background: #1a1a1a !important;
-    color: #f0f0f0 !important;
-    border: 1px solid #2e2e2e !important;
-    border-radius: 10px !important;
-    font-family: 'Nunito', sans-serif !important;
-    font-size: 0.9rem !important;
-    transition: border-color 0.2s;
-}
-.stTextArea > div > div > textarea:focus {
-    border-color: #e85d04 !important;
-    box-shadow: 0 0 0 2px rgba(232,93,4,0.15) !important;
-}
-
-/* ── BUTTON ── */
-.stButton > button {
-    background: #e85d04 !important;
-    color: #fff !important;
-    border: none !important;
-    border-radius: 10px !important;
-    font-family: 'Nunito', sans-serif !important;
-    font-weight: 800 !important;
-    font-size: 0.9rem !important;
-    letter-spacing: 0.05em !important;
-    padding: 10px 0 !important;
-    width: 100% !important;
-    transition: background 0.2s, transform 0.1s !important;
-}
-.stButton > button:hover {
-    background: #cf4f00 !important;
-    transform: translateY(-1px) !important;
-}
+/* ── INPUT & BUTTON ── */
+.stTextArea > div > div > textarea { background: #1a1a1a !important; color: #f0f0f0 !important; border: 1px solid #2e2e2e !important; border-radius: 10px !important; font-family: 'Nunito', sans-serif !important; font-size: 0.9rem !important; transition: border-color 0.2s; }
+.stTextArea > div > div > textarea:focus { border-color: #e85d04 !important; box-shadow: 0 0 0 2px rgba(232,93,4,0.15) !important; }
+.stButton > button { background: #e85d04 !important; color: #fff !important; border: none !important; border-radius: 10px !important; font-family: 'Nunito', sans-serif !important; font-weight: 800 !important; font-size: 0.9rem !important; letter-spacing: 0.05em !important; padding: 10px 0 !important; width: 100% !important; transition: background 0.2s, transform 0.1s !important; }
+.stButton > button:hover { background: #cf4f00 !important; transform: translateY(-1px) !important; }
 .stButton > button:active { transform: translateY(0) !important; }
 
 /* ── STATUS BADGES ── */
-.badge-ok {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: #0d2b1a; border: 1px solid #1a5c35; color: #4ade80;
-    padding: 5px 12px; border-radius: 20px;
-    font-size: 0.75rem; font-family: 'Space Mono', monospace;
-}
-.badge-err {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: #2b0d0d; border: 1px solid #5c1a1a; color: #f87171;
-    padding: 5px 12px; border-radius: 20px;
-    font-size: 0.75rem; font-family: 'Space Mono', monospace;
-}
+.badge-ok { display: inline-flex; align-items: center; gap: 6px; background: #0d2b1a; border: 1px solid #1a5c35; color: #4ade80; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-family: 'Space Mono', monospace; }
+.badge-err { display: inline-flex; align-items: center; gap: 6px; background: #2b0d0d; border: 1px solid #5c1a1a; color: #f87171; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-family: 'Space Mono', monospace; }
 
-/* ── SHEET PANEL ── */
-.sheet-panel {
-    background: #141414;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
-    overflow: hidden;
-}
-.sheet-footer {
-    font-size: 0.72rem;
-    font-family: 'Space Mono', monospace;
-    color: #444;
-    margin-top: 8px;
-    text-align: right;
-}
+/* ── SHEET PANEL & FOOTER ── */
+.sheet-panel { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; overflow: hidden; }
+.sheet-footer { font-size: 0.72rem; font-family: 'Space Mono', monospace; color: #444; margin-top: 8px; display:flex; justify-content: space-between;}
+.credits { color: #888; }
+.credits b { color: #e85d04; }
 
 /* ── HIDE STREAMLIT CHROME ── */
 #MainMenu, footer, header { visibility: hidden; }
@@ -227,6 +73,8 @@ if "history" not in st.session_state:
     st.session_state.history = []
 if "status" not in st.session_state:
     st.session_state.status = None
+if "n8n_online" not in st.session_state:
+    st.session_state.n8n_online = False
 
 # ─── CHECAR SE N8N ESTÁ ONLINE ────────────────────────────────────────────────
 def check_n8n():
@@ -236,10 +84,10 @@ def check_n8n():
     except:
         return False
 
-n8n_online = check_n8n()
+# Atualiza status se o botão invisível for clicado (ou no carregamento inicial)
+st.session_state.n8n_online = check_n8n()
 
-# Badge dinâmico
-if n8n_online:
+if st.session_state.n8n_online:
     badge_style = "border-color:#1a5c35;color:#4ade80;"
     badge_text  = "● SISTEMA ATIVO"
 else:
@@ -254,7 +102,9 @@ st.markdown(f"""
     <h1>Portal de Atendimento</h1>
     <p>Triagem inteligente de leads · Powered by Groq + Llama 3.3</p>
   </div>
-  <span class="emb-badge" style="{badge_style}">{badge_text}</span>
+  <div class="emb-badge" style="{badge_style}">
+    {badge_text}
+  </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -265,7 +115,6 @@ col1, col2 = st.columns([1, 1.35], gap="large")
 with col1:
     st.markdown('<div class="section-label">💬 Chat de Atendimento</div>', unsafe_allow_html=True)
 
-    # Monta HTML das mensagens
     msgs_html = ''
     if not st.session_state.history:
         msgs_html = '<div class="chat-empty">Nenhuma mensagem ainda.<br/>Simule um atendimento abaixo ↓</div>'
@@ -311,13 +160,12 @@ with col1:
                     r = requests.post(WEBHOOK_URL, json={"message": user_input.strip()}, timeout=45)
                     if r.status_code == 200:
                         try:
-                            # Tenta converter a resposta para JSON
                             data = r.json()
-                            reply = data.get("Reply", "Mensagem recebida!")
+                            # Tenta pegar "Reply" ou "reply", senão usa o padrão
+                            reply = data.get("Reply", data.get("reply", "Mensagem recebida e registrada!"))
                             st.session_state.history.append({"role": "ai", "text": reply})
                             st.session_state.status = ("ok", "Lead salvo no CRM")
                         except ValueError:
-                            # Se o n8n retornar OK, mas não for um JSON válido (ex: workflow inativo)
                             st.session_state.status = ("err", "Erro: n8n não retornou JSON (Ative o workflow)")
                     else:
                         st.session_state.status = ("err", f"Erro {r.status_code}")
@@ -344,6 +192,9 @@ with col2:
         unsafe_allow_html=True
     )
     st.markdown(
-        '<div class="sheet-footer">Atualiza a cada envio · Google Sheets · Embalagio_Leads_CRM</div>',
+        '''<div class="sheet-footer">
+             <span class="credits">Desenvolvido por <b>Emmanuel</b></span>
+             <span>Atualiza a cada envio · Google Sheets</span>
+           </div>''',
         unsafe_allow_html=True
     )
