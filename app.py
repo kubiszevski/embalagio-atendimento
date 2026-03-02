@@ -1,10 +1,10 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import requests
 import base64
 
 WEBHOOK_URL = "https://n8n-production-adc8.up.railway.app/webhook/embalagio-atendimento"
 SHEET_EMBED  = "https://docs.google.com/spreadsheets/d/1QcAuW2CIVvVv03asnwpj32AvT6rXKV9FXwLdSHXWhiw/edit?usp=sharing"
-README_URL   = "https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md"
 
 st.set_page_config(page_title="Embalagio CRM", page_icon="📦", layout="wide")
 
@@ -43,15 +43,9 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
     background: #FF7A1A !important; 
 }}
 
-/* Forçar legibilidade no Popover — FIX #2: fundo escuro em vez de branco */
-div[data-testid="stPopoverBody"] {{
-    background-color: #0E2A3A !important;
-}}
+/* Forçar legibilidade no Popover */
 div[data-testid="stPopoverBody"] * {{
-    color: #f0f0f0 !important;
-}}
-div[data-testid="stPopoverBody"] h3 {{
-    color: #FF6A00 !important;
+    color: #333333 !important;
 }}
 
 /* Inputs e Selectbox */
@@ -84,7 +78,7 @@ div[data-testid="stPopoverBody"] h3 {{
     flex-direction: column; 
 }}
 
-.chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px; }}
+.chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }}
 .msg-user {{ display: flex; justify-content: flex-end; }}
 .msg-ai   {{ display: flex; justify-content: flex-start; }}
 .bubble {{ max-width: 85%; padding: 10px 14px; font-size: 0.95rem; line-height: 1.4; word-break: normal; overflow-wrap: break-word; font-family: sans-serif; }}
@@ -92,6 +86,19 @@ div[data-testid="stPopoverBody"] h3 {{
 .bubble-ai {{ background: #202c33 !important; color: #e9edef !important; border-radius: 4px 12px 12px 12px; }}
 .bubble-label {{ color: #8696a0 !important; font-size: 0.7rem; font-family: monospace; margin-bottom: 4px;}}
 .chat-empty {{ color: #8696a0 !important; text-align: center; font-family: monospace; font-size: 0.85rem; margin-top: auto; margin-bottom: auto; }}
+
+/* Conserto do botão secundário (Popover) para não ficar branco */
+button[kind="secondary"] {{
+    background-color: transparent !important;
+    color: #f0f0f0 !important;
+    border: 1px solid #FF6A00 !important;
+}}
+button[kind="secondary"]:hover, button[kind="secondary"]:focus, button[kind="secondary"]:active {{
+    background-color: #0E2A3A !important;
+    color: #FF6A00 !important;
+    border: 1px solid #FF6A00 !important;
+    box-shadow: none !important;
+}}
 
 #MainMenu, footer, header {{ visibility: hidden; }}
 .block-container {{ padding-top: 1rem !important; max-width: 1200px; }}
@@ -113,18 +120,6 @@ div[data-testid="stPopoverBody"] h3 {{
     .header-title-box p {{ font-size: 0.65rem; }}
 }}
 </style>
-
-<!-- FIX #4: Auto-scroll do chat para a última mensagem -->
-<script>
-function scrollChat() {{
-    const panels = document.querySelectorAll('.chat-messages');
-    panels.forEach(p => p.scrollTop = p.scrollHeight);
-}}
-// Roda na carga e com delay para garantir que o Streamlit terminou de renderizar
-scrollChat();
-setTimeout(scrollChat, 300);
-setTimeout(scrollChat, 800);
-</script>
 """, unsafe_allow_html=True)
 
 # ─── GERENCIAMENTO DE ESTADO ───
@@ -139,7 +134,7 @@ if "caixa_texto" not in st.session_state:
 if "texto_enviado" not in st.session_state:
     st.session_state.texto_enviado = ""
 
-# FIX #1: Cache do ping com TTL de 30s para não atrasar o carregamento
+# Cache de 30 segundos para aliviar o n8n
 @st.cache_data(ttl=30)
 def check_n8n():
     try:
@@ -158,7 +153,7 @@ st.markdown(f"""
         <img src="data:image/png;base64,{logo_b64}" class="header-logo">
         <div class="header-title-box">
             <h1>PORTAL DE ATENDIMENTO</h1>
-            <p>Triagem de leads · IA WhatsApp · Powered by Groq + Llama 3.3 · Hospedado no Railway</p>
+            <p>Triagem de leads · IA WhatsApp · Powered by Groq + Llama 3.3</p>
         </div>
     </div>
     <div style="background-color: {badge_bg}; border: 1px solid {badge_border}; color: {badge_color}; padding: 6px 12px; border-radius: 20px; font-size: 0.7rem; font-family: monospace; font-weight: bold; white-space: nowrap;">
@@ -167,15 +162,13 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# FIX #2: Popover com fundo escuro e menção ao Railway
 with st.popover("ℹ️ Sobre este Projeto"):
     st.markdown("""
-    <div style="font-family: sans-serif; font-size: 0.95rem;">
+    <div style="color: #333333; font-family: sans-serif; font-size: 0.95rem;">
         <h3 style="color: #FF6A00; margin-top: 0; margin-bottom: 10px;">📦 Embalagio IA - Triagem & CRM</h3>
-        <p style="margin-bottom: 10px;">O <b>Embalagio IA</b> é um assistente virtual autônomo focado na qualificação de leads B2B/B2C. Utilizando LLMs de baixa latência (Llama 3.3 via Groq) integrados ao n8n, ele atua no topo do funil de vendas simulando o WhatsApp.</p>
+        <p style="margin-bottom: 10px;">O <b>Embalagio IA</b> é um assistente virtual autônomo focado na qualificação de leads B2B/B2C. Utilizando LLMs de baixa latência (Llama 3.3 via Groq) integrados ao n8n (hospedado no Railway), ele atua no topo do funil de vendas simulando o WhatsApp.</p>
         <p style="margin-bottom: 10px;">Ele interpreta intenções não estruturadas de clientes, extrai dados essenciais (Nome, Categoria e Quantidade) lidando com falhas na comunicação humana, e alimenta um CRM em tempo real. Isso elimina fricções operacionais e garante que a equipe comercial receba leads altamente qualificados.</p>
-        <p style="margin-bottom: 10px;">O backend (n8n) e o frontend (Streamlit) são hospedados no <b>Railway</b>, garantindo disponibilidade contínua e deploys simples via Git.</p>
-        <p style="font-size: 0.85rem; border-top: 1px solid #2a4a5a; padding-top: 10px;">Desenvolvido com Python, Streamlit, n8n, Groq API e Google Sheets.</p>
+        <p style="font-size: 0.85rem; border-top: 1px solid #ccc; padding-top: 10px;">Desenvolvido com Python, Streamlit, n8n, Groq API e Google Sheets. <br><br>👉 <a href="https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md" target="_blank" style="color: #FF6A00; text-decoration: none; font-weight: bold;">Ler a Documentação no GitHub (README)</a></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -204,55 +197,59 @@ with col1:
             else:
                 msgs_html += f'<div class="msg-ai"><div><div class="bubble-label">🤖 Embalagio IA</div><div class="bubble bubble-ai"><p style="margin:0;">{m["text"]}</p></div></div></div>'
 
-    # FIX #4: id="chat-anchor" para o scroll via JS
-    st.markdown(f'<div class="chat-panel"><div class="chat-messages" id="chat-messages-box">{msgs_html}</div></div>', unsafe_allow_html=True)
+    # Renderiza o chat
+    st.markdown(f'<div class="chat-panel"><div class="chat-messages">{msgs_html}</div></div>', unsafe_allow_html=True)
+    
+    # Injeta um JS silencioso para forçar o scroll para baixo sempre que o chat for renderizado
+    components.html(
+        """
+        <script>
+            const chatContainer = window.parent.document.querySelector('.chat-messages');
+            if (chatContainer) {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        </script>
+        """,
+        height=0, width=0
+    )
+    
     st.write("")
     
-    # FIX #3: Opções sem "Nível X", com mais pedidos e descrições claras
+    # --- NOVO MENU DE TESTES COM SELECTBOX ---
     testes_opcoes = {
         "-- Digite livremente ou escolha um cenário de teste --": {"msg": "", "desc": ""},
-        "Pedido completo de uma vez": {
-            "msg": "Oi, sou o Marcos. Preciso de 500 caixas de pizza G.",
-            "desc": "Testa se a IA extrai todos os dados (nome, produto, quantidade) de primeira, sem fazer nenhuma pergunta adicional, e salva o lead direto no CRM."
+        "Pedido Direto (Fluxo Ideal)": {
+            "msg": "Oi, sou o Marcos. Preciso de 500 caixas de pizza G.", 
+            "desc": "Testa se a IA extrai todos os dados de primeira, classificando a intenção e salvando o lead sem perguntas adicionais."
         },
-        "Pedido sem informar o nome": {
-            "msg": "Quero 1000 sacos kraft.",
-            "desc": "Força a IA a reter o envio ao CRM e perguntar o nome de forma humanizada, sem revelar que está seguindo um fluxo automatizado."
+        "Dados Faltantes (Conversacional)": {
+            "msg": "Quero 1000 sacos kraft.", 
+            "desc": "Força a IA a reter o envio ao CRM e fazer uma pergunta humanizada solicitando o nome faltante."
         },
-        "Produto fora do catálogo padrão": {
-            "msg": "Me chamo Ana. Preciso de 200 potes plásticos para salada.",
-            "desc": "Testa se a IA enquadra silenciosamente um produto não listado (potes plásticos) na categoria genérica 'Diversos', sem questionar o cliente."
+        "Inferência de Categoria (Inteligência)": {
+            "msg": "Me chamo Ana. Preciso de 200 potes plásticos para salada.", 
+            "desc": "Testa se a IA enquadra um produto fora do padrão (potes plásticos) na categoria genérica 'Diversos' silenciosamente."
         },
-        "Alta quantidade — regra de segurança": {
-            "msg": "Bom dia. Queremos 5000 sacos de papel para pão. Aqui é a padaria Doce Pão.",
-            "desc": "Aciona a regra de negócio: pedidos acima de 1000 unidades devem ser confirmados pelo cliente antes de ir ao CRM, evitando registros por engano."
-        },
-        "Pedido em etapas — quantidade depois": {
-            "msg": "Oi! Sou a Julia. Quero caixas de papelão.",
-            "desc": "Testa o fluxo de coleta progressiva: a IA recebe nome + produto mas precisa perguntar a quantidade antes de finalizar o lead."
-        },
-        "Pedido com quantidade inválida": {
-            "msg": "Preciso de zero caixas. Meu nome é Roberto.",
-            "desc": "Testa a validação de quantidade: a IA deve recusar '0' como pedido válido e solicitar uma quantidade real de forma educada."
-        },
-        "Empresa fazendo pedido B2B": {
-            "msg": "Aqui é o Carlos, do Grupo Supermercados Leste. Precisamos de 800 bandejas de isopor.",
-            "desc": "Simula um lead B2B com nome de empresa implícito, testando se a IA registra corretamente o nome do contato e a categoria do produto."
-        },
+        "Regra de Alta Quantidade (Segurança)": {
+            "msg": "Bom dia. Queremos 5000 sacos de papel para pão. Aqui é a padaria Doce Pão.", 
+            "desc": "Aciona a regra de negócio de segurança: a IA deve segurar o lead e pedir que o cliente confirme se realmente deseja essa alta quantidade (>1000)."
+        }
     }
 
+    # Callback para atualizar a caixa de texto quando selecionar um item
     def on_select_change():
         escolha = st.session_state.seletor_teste
         if escolha != "-- Digite livremente ou escolha um cenário de teste --":
             st.session_state.caixa_texto = testes_opcoes[escolha]["msg"]
 
     escolha_atual = st.selectbox(
-        "💡 Escolha um cenário de teste ou escreva abaixo:",
-        list(testes_opcoes.keys()),
-        key="seletor_teste",
+        "💡 Sugestões de pedidos rápidos:", 
+        list(testes_opcoes.keys()), 
+        key="seletor_teste", 
         on_change=on_select_change
     )
 
+    # O Pop-up contextual em formato de card
     if escolha_atual != "-- Digite livremente ou escolha um cenário de teste --":
         st.markdown(f"""
         <div style="background-color: #0d212e; border-left: 4px solid #FF6A00; padding: 12px; margin-bottom: 15px; border-radius: 0 8px 8px 0;">
@@ -298,10 +295,12 @@ with col1:
                 except Exception as e:
                     st.session_state.status = ("err", "Sistema Offline ou Falha na Conexão.")
             
+            # Recarrega a tela IMEDIATAMENTE após a IA responder, atualizando o painel de chat
             st.rerun()
         else:
             st.warning("A mensagem não pode estar vazia.")
 
+    # Feedback visual dinâmico
     if st.session_state.status:
         t, msg = st.session_state.status
         if t == "ok":
@@ -320,28 +319,6 @@ with col2:
     st.markdown('<p style="font-size: 0.75rem; color: #888; text-align: right; margin-top: 5px; font-family: monospace;">Atualização em tempo real · Google Sheets</p>', unsafe_allow_html=True)
 
 st.markdown("---")
-
-# FIX #5: Seção do README
-st.markdown('<h3 class="brand-text" style="text-align: center; margin-bottom: 15px;">📄 Documentação do Projeto</h3>', unsafe_allow_html=True)
-
-readme_col1, readme_col2, readme_col3 = st.columns([1, 2, 1])
-with readme_col2:
-    st.markdown(f"""
-    <div style="background-color: #0E2A3A; border: 1px solid #FF6A00; border-radius: 12px; padding: 20px; text-align: center;">
-        <p style="font-size: 0.9rem; color: #d1d5db; margin-bottom: 15px;">
-            O README completo com arquitetura, instruções de deploy e variáveis de ambiente está disponível no repositório GitHub do projeto.
-        </p>
-        <a href="{README_URL}" target="_blank" style="
-            background: #FF6A00; color: #fff; text-decoration: none;
-            padding: 10px 24px; border-radius: 8px; font-weight: 800;
-            font-family: monospace; font-size: 0.9rem;
-        ">
-            📖 Abrir README no GitHub
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.write("")
 st.markdown('<h3 class="brand-text" style="text-align: center; margin-bottom: 20px;">🔍 Arquitetura Técnica (Backend Automatizado)</h3>', unsafe_allow_html=True)
 st.image("workflow_n8n.png", use_container_width=True)
 st.markdown('<p style="text-align: center; font-size: 0.8rem; color: #888;">Clique na imagem para ampliar e arrastar</p>', unsafe_allow_html=True)
@@ -350,7 +327,7 @@ st.markdown('<p style="text-align: center; font-size: 0.8rem; color: #888;">Cliq
 st.markdown("""
 <div style="text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid #1a3c54;">
     <p style="color: #888; font-size: 0.85rem; font-family: monospace;">
-        &lt;/&gt; Sistema de Triagem Automatizada | Desenvolvido por <b>Emmanuel</b>
+        &lt;/&gt; Sistema de Triagem Automatizada | Desenvolvido por <b>Emmanuel</b> | <a href="https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md" target="_blank" style="color: #FF6A00; text-decoration: none; font-weight: bold;">📖 Ver Documentação (README)</a>
     </p>
 </div>
 """, unsafe_allow_html=True)
