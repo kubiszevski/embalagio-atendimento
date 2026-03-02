@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import base64
 
-WEBHOOK_URL = "hhttps://n8n-production-adc8.up.railway.app/webhook/embalagio-atendimento"
+WEBHOOK_URL = "https://n8n-production-adc8.up.railway.app/webhook/embalagio-atendimento"
 SHEET_EMBED  = "https://docs.google.com/spreadsheets/d/1QcAuW2CIVvVv03asnwpj32AvT6rXKV9FXwLdSHXWhiw/edit?usp=sharing"
 
 st.set_page_config(page_title="Embalagio CRM", page_icon="📦", layout="wide")
