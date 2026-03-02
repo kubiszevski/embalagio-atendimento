@@ -55,11 +55,11 @@ button[kind="primary"]:hover {{
     background: #FF7A1A !important; 
 }}
 
-/* SOLUÇÃO 3: Botão Limpar Estilizado para Layout Nativo (Sem Position Absolute) */
+/* Botão Limpar (Layout e Responsividade corrigidos) */
 button[kind="secondary"] {{
     background: transparent !important;
     color: #8696a0 !important;
-    border: 1px solid #1a3c54 !important; /* Borda discreta para delimitar */
+    border: 1px solid #1a3c54 !important;
     box-shadow: none !important;
     font-size: 0.85rem !important;
     padding: 4px 10px !important;
@@ -71,6 +71,17 @@ button[kind="secondary"]:hover {{
     color: #f0f0f0 !important;
     border-color: #FF6A00 !important;
     background: rgba(255, 106, 0, 0.1) !important;
+}}
+
+/* Força o botão Limpar para a direita no Desktop, e centraliza/alinha nativo no mobile */
+div[data-testid="stButton"]:has(button[kind="secondary"]) {{
+    display: flex;
+    justify-content: flex-end;
+}}
+@media (max-width: 768px) {{
+    div[data-testid="stButton"]:has(button[kind="secondary"]) {{
+        justify-content: center; /* Ficará centralizado bonitinho acima do chat no celular */
+    }}
 }}
 
 div[data-testid="stPopoverBody"] * {{ color: #333333 !important; }}
@@ -85,20 +96,28 @@ div[data-testid="stPopoverBody"] * {{ color: #333333 !important; }}
 .msg-user {{ display: flex; justify-content: flex-end; }}
 .msg-ai   {{ display: flex; justify-content: flex-start; }}
 
-/* SOLUÇÃO 1: Bolhas de chat blindadas contra quebra de palavras curtas */
+/* BOLHAS DE CHAT - Correção da quebra de linha */
 .bubble {{ 
     width: fit-content; 
+    min-width: min-content !important; /* Garante que a bolha tenha o tamanho mínimo da palavra */
     max-width: 85%; 
     padding: 10px 14px; 
+    border-radius: 12px;
+    font-family: sans-serif; 
+}}
+
+/* Aplica regras restritas de quebra diretamente na tag <p> injetada pelo Streamlit */
+.bubble p {{
+    margin: 0 !important;
     font-size: 0.95rem; 
     line-height: 1.4; 
     white-space: pre-wrap !important; 
-    word-break: normal !important;        /* Impede a quebra de sílabas */
-    overflow-wrap: break-word !important; /* Quebra apenas URLs gigantes */
-    -webkit-hyphens: none !important;     /* Previne hifenização automática do navegador */
+    word-break: normal !important; 
+    overflow-wrap: break-word !important; 
+    -webkit-hyphens: none !important; 
     hyphens: none !important;
-    font-family: sans-serif; 
 }}
+
 .bubble-user {{ background: #005c4b !important; color: #e9edef !important; border-radius: 12px 4px 12px 12px; }}
 .bubble-ai {{ background: #202c33 !important; color: #e9edef !important; border-radius: 4px 12px 12px 12px; }}
 .bubble-label {{ color: #8696a0 !important; font-size: 0.7rem; font-family: monospace; margin-bottom: 4px;}}
@@ -177,12 +196,13 @@ st.write("")
 col1, col2 = st.columns([1.2, 2.2], gap="large")
 
 with col1:
-    # SOLUÇÃO 2 e 3: Colunas aninhadas nativas para Título e Botão (Alinhamento centralizado na vertical)
+    # Título e Botão
     c_title1, c_btn = st.columns([0.7, 0.3], vertical_alignment="center")
     with c_title1:
         st.markdown('<p class="panel-title">💬 Chat de Atendimento</p>', unsafe_allow_html=True)
     with c_btn:
-        if st.button("🗑️ Limpar", type="secondary", use_container_width=True):
+        # AQUI FOI REMOVIDO O use_container_width=True PARA FIXAR A LARGURA NO MOBILE
+        if st.button("🗑️ Limpar", type="secondary"):
             st.session_state.history = []
             st.session_state.status = None
             st.session_state.context_start_idx = 0
@@ -198,9 +218,9 @@ with col1:
         else:
             for m in st.session_state.history:
                 if m["role"] == "user":
-                    msgs_html += f'<div class="msg-user"><div><div class="bubble-label bubble-label-right" style="text-align: right;">Você</div><div class="bubble bubble-user"><p style="margin:0;">{m["text"]}</p></div></div></div>'
+                    msgs_html += f'<div class="msg-user"><div><div class="bubble-label bubble-label-right" style="text-align: right;">Você</div><div class="bubble bubble-user"><p>{m["text"]}</p></div></div></div>'
                 else:
-                    msgs_html += f'<div class="msg-ai"><div><div class="bubble-label">🤖 Embalagio IA</div><div class="bubble bubble-ai"><p style="margin:0;">{m["text"]}</p></div></div></div>'
+                    msgs_html += f'<div class="msg-ai"><div><div class="bubble-label">🤖 Embalagio IA</div><div class="bubble bubble-ai"><p>{m["text"]}</p></div></div></div>'
         return f'<div class="chat-panel"><div class="chat-messages" id="chat-messages-box">{msgs_html}</div></div>'
 
     chat_container.markdown(renderizar_chat(), unsafe_allow_html=True)
@@ -314,12 +334,12 @@ with col1:
             st.markdown(f'<div style="color: #f87171; font-family: monospace; font-size: 0.85rem; font-weight: bold; margin-top: 10px;">✗ {msg}</div>', unsafe_allow_html=True)
 
 with col2:
-    # SOLUÇÃO 2: Repetindo exatamente a mesma estrutura de colunas do Chat para garantir o nivelamento horizontal perfeito.
+    # Coluna do CRM
     c_title2, c_empty = st.columns([0.7, 0.3], vertical_alignment="center")
     with c_title2:
         st.markdown('<p class="panel-title">📊 CRM — Leads em Tempo Real</p>', unsafe_allow_html=True)
     with c_empty:
-        st.empty() # Espaço vazio intencional para forçar a criação da mesma "margem" superior do Streamlit.
+        st.empty() 
 
     st.markdown(
         f'<div style="background-color: #0E2A3A; border: 2px solid #FF6A00; border-radius: 12px; overflow: hidden; line-height: 0;"><iframe src="{SHEET_EMBED}" width="100%" height="600" frameborder="0" style="border-radius: 10px;"></iframe></div>',
