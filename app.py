@@ -231,9 +231,9 @@ with col1:
             "msg": "Oi, sou o Marcos. Preciso de 500 caixas de pizza G.", 
             "desc": "Testa a extração imediata dos dados fundamentais (Nome, Produto e Quantidade) e a correta categorização do item."
         },
-        "Pedido Técnico Complexo": {
-            "msg": "Olá, sou a Patrícia da confeitaria 'Doce Requinte'. Preciso de 150 caixas de acetato transparentes para ovos de colher de 250g.", 
-            "desc": "Avalia a precisão da IA em processar um pedido com múltiplas especificações técnicas em uma única frase, sem ultrapassar o limite de volume."
+        "Pedido Técnico": {
+            "msg": "Oi, sou a Patrícia da Doce Requinte. Preciso de 150 caixas brancas para 6 docinhos.", 
+            "desc": "Avalia a precisão da IA em processar um pedido com detalhes de cor e uso específico em uma única frase."
         },
         "Filtro de Segurança e Escopo": {
             "msg": "Boa tarde, sou o Pedro. Vocês consertam impressoras?", 
@@ -241,11 +241,11 @@ with col1:
         },
         "Validação de Grande Volume": {
             "msg": "Oi, sou a Renata. Quero 3000 mini embalagens kraft para doces.", 
-            "desc": "Demonstra o protocolo de segurança para volumes elevados (acima de 1000), onde a IA exige uma confirmação do cliente."
+            "desc": "Demonstra o protocolo de segurança obrigatório: para qualquer pedido acima de 1000 unidades, o sistema pausa para solicitar uma confirmação humana."
         },
-        "Volume Alto com Confirmação": {
+        "Confirmação de Segurança Explicita": {
             "msg": "Olá, aqui é a Renata. Queremos 3000 mini embalagens kraft, pode confirmar esse volume pra mim.", 
-            "desc": "Prova a inteligência do fluxo: se o cliente já autoriza o volume alto na mensagem inicial, o sistema não solicita reconfirmação."
+            "desc": "Valida o rigor do sistema: mesmo que o cliente peça para confirmar na primeira mensagem, a IA cumpre o protocolo e solicita uma resposta afirmativa dedicada."
         }
     }
 
