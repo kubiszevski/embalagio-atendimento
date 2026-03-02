@@ -67,7 +67,7 @@ Para rodar a interface Streamlit na sua máquina e conectá-la a um backend n8n 
 
 1. **Clone o repositório:**
    ```
-   git clone [https://github.com/kubiszevski/embalagio-atendimento.git](https://github.com/kubiszevski/embalagio-atendimento.git)
+   git clone https://github.com/kubiszevski/embalagio-atendimento.git https://github.com/kubiszevski/embalagio-atendimento.git
    cd embalagio-atendimento
    ```
 
@@ -79,14 +79,14 @@ WEBHOOK_URL=url_de_producao_do_seu_webhook_n8n
 ```
 
 3. **Instale as dependências:**
+```
 pip install -r requirements.txt
+```
 
 4. **Inicie a aplicação:**
+```
 streamlit run app.py
-
-👨‍💻 Autor
-Desenvolvido por Emmanuel.
-Engenharia de Prompts e Automação de Processos focado em otimização de fluxos comerciais.
+```
 
 ## 👨‍💻 Autor
 Desenvolvido por Emmanuel.
