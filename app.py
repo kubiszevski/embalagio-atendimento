@@ -1,15 +1,12 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import requests
 import base64
-import time
 
 WEBHOOK_URL = "https://n8n-production-adc8.up.railway.app/webhook/embalagio-atendimento"
 SHEET_EMBED  = "https://docs.google.com/spreadsheets/d/1QcAuW2CIVvVv03asnwpj32AvT6rXKV9FXwLdSHXWhiw/edit?usp=sharing"
 
 st.set_page_config(page_title="Embalagio CRM", page_icon="📦", layout="wide")
 
-# ─── FUNÇÃO PARA A LOGO ───
 def get_img_as_base64(file_path):
     try:
         with open(file_path, 'rb') as f:
@@ -19,18 +16,14 @@ def get_img_as_base64(file_path):
 
 logo_b64 = get_img_as_base64("logo_embalagio.png")
 
-# ─── CSS GLOBAL ───
 st.markdown(f"""
 <style>
-/* Fundo Geral */
 .stApp, .stApp > header {{ background-color: #0A1F2C !important; }}
 
 h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
 
-/* Destaques na Cor da Marca */
 .brand-text {{ color: #FF6A00 !important; }}
 
-/* Botão de Enviar Principal */
 .stButton > button {{ 
     background: #FF6A00 !important; 
     color: #ffffff !important; 
@@ -44,12 +37,10 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
     background: #FF7A1A !important; 
 }}
 
-/* Forçar legibilidade no Popover */
 div[data-testid="stPopoverBody"] * {{
     color: #333333 !important;
 }}
 
-/* Inputs e Selectbox */
 .stSelectbox div[data-baseweb="select"] {{ 
     border-color: #FF6A00 !important; 
     background-color: #0E2A3A !important; 
@@ -61,14 +52,12 @@ div[data-testid="stPopoverBody"] * {{
     color: #f0f0f0 !important; 
 }}
 
-/* Bordas Ativas */
 .stSelectbox div[data-baseweb="select"]:focus-within, 
 .stTextArea textarea:focus {{
     box-shadow: 0 0 0 2px #FF6A00 !important;
     outline: none !important;
 }}
 
-/* Painel do Chat */
 .chat-panel {{ 
     background-color: #0E2A3A; 
     border: 1px solid #FF6A00; 
@@ -79,7 +68,7 @@ div[data-testid="stPopoverBody"] * {{
     flex-direction: column; 
 }}
 
-.chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }}
+.chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px; }}
 .msg-user {{ display: flex; justify-content: flex-end; }}
 .msg-ai   {{ display: flex; justify-content: flex-start; }}
 .bubble {{ max-width: 85%; padding: 10px 14px; font-size: 0.95rem; line-height: 1.4; word-break: normal; overflow-wrap: break-word; font-family: sans-serif; }}
@@ -88,7 +77,6 @@ div[data-testid="stPopoverBody"] * {{
 .bubble-label {{ color: #8696a0 !important; font-size: 0.7rem; font-family: monospace; margin-bottom: 4px;}}
 .chat-empty {{ color: #8696a0 !important; text-align: center; font-family: monospace; font-size: 0.85rem; margin-top: auto; margin-bottom: auto; }}
 
-/* Conserto do botão secundário (Popover) para não ficar branco */
 button[kind="secondary"] {{
     background-color: transparent !important;
     color: #f0f0f0 !important;
@@ -104,7 +92,6 @@ button[kind="secondary"]:hover, button[kind="secondary"]:focus, button[kind="sec
 #MainMenu, footer, header {{ visibility: hidden; }}
 .block-container {{ padding-top: 1rem !important; max-width: 1200px; }}
 
-/* Cabeçalho Responsivo */
 .header-container {{
     display: flex; justify-content: space-between; align-items: center; 
     padding-bottom: 15px; border-bottom: 2px solid #FF6A00; margin-bottom: 25px; width: 100%;
@@ -123,7 +110,6 @@ button[kind="secondary"]:hover, button[kind="secondary"]:focus, button[kind="sec
 </style>
 """, unsafe_allow_html=True)
 
-# ─── GERENCIAMENTO DE ESTADO ───
 if "history" not in st.session_state:
     st.session_state.history = []
 if "status" not in st.session_state:
@@ -135,7 +121,6 @@ if "caixa_texto" not in st.session_state:
 if "texto_enviado" not in st.session_state:
     st.session_state.texto_enviado = ""
 
-# Cache de 30 segundos para aliviar o n8n
 @st.cache_data(ttl=30)
 def check_n8n():
     try:
@@ -147,7 +132,6 @@ def check_n8n():
 n8n_online = check_n8n()
 badge_bg, badge_border, badge_color, badge_text = ("#0d2b1a", "#1a5c35", "#4ade80", "● SISTEMA ATIVO") if n8n_online else ("#2b0d0d", "#5c1a1a", "#f87171", "○ SISTEMA OFFLINE")
 
-# ─── CABEÇALHO ───
 st.markdown(f"""
 <div class="header-container">
     <div class="header-left">
@@ -165,8 +149,8 @@ st.markdown(f"""
 
 with st.popover("ℹ️ Sobre este Projeto"):
     st.markdown("""
-    <div style="text-align: right; margin-bottom: 8px;">
-        <button onclick="window.parent.document.dispatchEvent(new MouseEvent('mousedown'))" style="background: transparent; border: none; color: #666; font-size: 1.1rem; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 4px;" title="Fechar">&#x2715;</button>
+    <div style="text-align: left; margin-bottom: 10px;">
+        <button onclick="window.parent.document.body.dispatchEvent(new MouseEvent('mousedown', {bubbles:true}));" style="background: transparent; border: none; color: #888; font-size: 1.2rem; cursor: pointer; padding: 0;">✕</button>
     </div>
     <div style="color: #333333; font-family: sans-serif; font-size: 0.95rem;">
         <h3 style="color: #FF6A00; margin-top: 0; margin-bottom: 10px;">📦 Embalagio IA - Triagem & CRM</h3>
@@ -179,13 +163,12 @@ with st.popover("ℹ️ Sobre este Projeto"):
 
 st.write("")
 
-# ─── LAYOUT PRINCIPAL ───
 col1, col2 = st.columns([1, 1.3], gap="large")
 
 with col1:
-    chat_head_col1, chat_head_col2 = st.columns([3, 1], vertical_alignment="center")
+    chat_head_col1, chat_head_col2 = st.columns([4, 1], vertical_alignment="center")
     chat_head_col1.markdown('<p class="brand-text" style="font-family: monospace; font-weight: bold; text-transform: uppercase; margin: 0;">💬 Chat de Atendimento</p>', unsafe_allow_html=True)
-    if chat_head_col2.button("🗑️ Limpar"):
+    if chat_head_col2.button("🗑️ Limpar", use_container_width=True):
         st.session_state.history = []
         st.session_state.status = None
         st.session_state.context_start_idx = 0
@@ -202,9 +185,6 @@ with col1:
             else:
                 msgs_html += f'<div class="msg-ai"><div><div class="bubble-label">🤖 Embalagio IA</div><div class="bubble bubble-ai"><p style="margin:0;">{m["text"]}</p></div></div></div>'
 
-    # A sua sacada de mestre: Âncora invisível no final das mensagens
-    msgs_html += '<div id="chat-bottom"></div>'
-
     st.markdown(f"""
     <div class="chat-panel">
         <div class="chat-messages" id="chat-messages-box">
@@ -213,31 +193,8 @@ with col1:
     </div>
     """, unsafe_allow_html=True)
     
-    # Scroll automático — busca a caixa pelo ID e força scroll para o fim
-    components.html(
-        f"""
-        <script>
-            function doScroll() {{
-                const doc = window.parent.document;
-                const box = doc.getElementById('chat-messages-box');
-                if (box) {{
-                    box.scrollTop = box.scrollHeight;
-                }} else {{
-                    const bottom = doc.getElementById('chat-bottom');
-                    if (bottom) bottom.scrollIntoView({{ behavior: 'smooth', block: 'end' }});
-                }}
-            }}
-            // Tenta imediatamente e depois mais uma vez após render
-            doScroll();
-            setTimeout(doScroll, 300);
-        </script>
-        """,
-        height=0, width=0
-    )
-
     st.write("")
     
-    # --- NOVO MENU DE TESTES COM SELECTBOX ---
     testes_opcoes = {
         "-- Digite livremente ou escolha um cenário de teste --": {"msg": "", "desc": ""},
         "Pedido Direto (Fluxo Ideal)": {
@@ -258,7 +215,6 @@ with col1:
         }
     }
 
-    # Callback para atualizar a caixa de texto quando selecionar um item
     def on_select_change():
         escolha = st.session_state.seletor_teste
         if escolha != "-- Digite livremente ou escolha um cenário de teste --":
@@ -271,7 +227,6 @@ with col1:
         on_change=on_select_change
     )
 
-    # O Pop-up contextual em formato de card
     if escolha_atual != "-- Digite livremente ou escolha um cenário de teste --":
         st.markdown(f"""
         <div style="background-color: #0d212e; border-left: 4px solid #FF6A00; padding: 12px; margin-bottom: 15px; border-radius: 0 8px 8px 0;">
@@ -317,12 +272,10 @@ with col1:
                 except Exception as e:
                     st.session_state.status = ("err", "Sistema Offline ou Falha na Conexão.")
             
-            # Recarrega a tela IMEDIATAMENTE após a IA responder, atualizando o painel de chat
             st.rerun()
         else:
             st.warning("A mensagem não pode estar vazia.")
 
-    # Feedback visual dinâmico
     if st.session_state.status:
         t, msg = st.session_state.status
         if t == "ok":
@@ -343,14 +296,12 @@ with col2:
 st.markdown("---")
 st.markdown('<h3 class="brand-text" style="text-align: center; margin-bottom: 20px;">🔍 Arquitetura Técnica (Backend Automatizado)</h3>', unsafe_allow_html=True)
 st.image("workflow_n8n.png", use_container_width=True)
-st.markdown('<p style="text-align: center; font-size: 0.8rem; color: #888;">Clique na imagem para ampliar e arrastar</p>', unsafe_allow_html=True)
 
-# ─── RODAPÉ PROFISSIONAL ───
 st.markdown("""
 <div style="text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid #1a3c54;">
     <p style="color: #888; font-size: 0.85rem; font-family: monospace; margin-bottom: 8px;">
-        &lt;/&gt; Sistema de Triagem Automatizada | Desenvolvido por <b style="color: #aaa;">Emmanuel</b>
+        &lt;/&gt; Sistema de Triagem Automatizada | Desenvolvido por <b>Emmanuel</b>
     </p>
-    <a href="https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md" target="_blank" style="color: #aaa; text-decoration: none; font-size: 0.8rem; font-family: monospace; border: 1px solid #444; padding: 4px 12px; border-radius: 6px; transition: all 0.2s;">📖 Ver Documentação (README)</a>
+    <a href="https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md" target="_blank" style="color: #888; text-decoration: underline; font-weight: bold; font-size: 0.85rem; font-family: monospace;">📖 Ver Documentação (README)</a>
 </div>
 """, unsafe_allow_html=True)
