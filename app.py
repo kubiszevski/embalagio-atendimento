@@ -247,11 +247,11 @@ with col1:
                     if r.status_code == 200:
                         import re
                         import json
+                        
                         raw_text = r.text
                         
                         try:
-                            # 🎯 O PULO DO GATO: 
-                            # Procura o primeiro '{' e o último '}' ignorando o que estiver fora.
+                            # Procura o JSON no meio da resposta
                             match = re.search(r'(\{.*\})', raw_text, re.DOTALL)
                             
                             if match:
@@ -269,12 +269,13 @@ with col1:
                                 else:
                                     st.session_state.status = ("info", "🤖 IA coletando dados...")
                             else:
-                                # Caso a IA não mande NENHUM JSON, tratamos como texto puro
-                                st.session_state.history.append({"role": "ai", "text": raw_text})
-                                st.session_state.status = ("info", "🤖 Resposta em modo texto.")
+                                # 🚨 MODO DEBUG: Vai mostrar na tela exatamente o que o n8n cuspiu
+                                texto_debug = raw_text if raw_text.strip() else "[RESPOSTA VAZIA DO N8N]"
+                                st.session_state.history.append({"role": "ai", "text": f"⚠️ ERRO DE FORMATO. O modelo respondeu assim: {texto_debug}"})
+                                st.session_state.status = ("err", "🤖 IA não gerou o JSON esperado.")
                                 
                         except Exception as e:
-                            st.session_state.status = ("err", f"Erro ao processar: {str(e)}")
+                            st.session_state.status = ("err", f"Erro crítico no Python: {str(e)}")
                     else:
                         st.session_state.status = ("err", f"Erro de comunicação: {r.status_code}")
                 except Exception as e:
