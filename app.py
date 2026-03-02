@@ -29,6 +29,16 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
 
 .brand-text {{ color: #FF6A00 !important; }}
 
+/* Títulos das colunas alinhados perfeitamente */
+.panel-title {{
+    color: #FF6A00;
+    font-family: monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+    font-size: 1.05rem;
+}}
+
 button[kind="primary"] {{ 
     background: #FF6A00 !important; 
     color: #ffffff !important; 
@@ -42,6 +52,7 @@ button[kind="primary"]:hover {{
     background: #FF7A1A !important; 
 }}
 
+/* Botão Limpar alinhado à direita de forma absoluta (Fixo no PC e Mobile) */
 button[kind="secondary"] {{
     background: transparent !important;
     color: #8696a0 !important;
@@ -51,10 +62,20 @@ button[kind="secondary"] {{
     padding: 0 !important;
     min-height: 0 !important;
     height: auto !important;
+    position: absolute;
+    right: 0px;
+    top: -38px;
+    z-index: 100;
 }}
 button[kind="secondary"]:hover {{
     color: #f0f0f0 !important;
     background: transparent !important;
+}}
+
+/* Zera a altura do container do botão para não empurrar o chat para baixo */
+div[data-testid="stButton"]:has(button[kind="secondary"]) {{
+    height: 0px;
+    margin: 0;
 }}
 
 div[data-testid="stPopoverBody"] * {{ color: #333333 !important; }}
@@ -68,7 +89,19 @@ div[data-testid="stPopoverBody"] * {{ color: #333333 !important; }}
 .chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px; }}
 .msg-user {{ display: flex; justify-content: flex-end; }}
 .msg-ai   {{ display: flex; justify-content: flex-start; }}
-.bubble {{ width: fit-content; max-width: 85%; padding: 10px 14px; font-size: 0.95rem; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; font-family: sans-serif; }}
+
+/* Bolhas de chat com quebra de linha inteligente para não quebrar "Oi" */
+.bubble {{ 
+    width: fit-content; 
+    max-width: 85%; 
+    padding: 10px 14px; 
+    font-size: 0.95rem; 
+    line-height: 1.4; 
+    white-space: pre-wrap; 
+    word-break: normal; 
+    overflow-wrap: break-word; 
+    font-family: sans-serif; 
+}}
 .bubble-user {{ background: #005c4b !important; color: #e9edef !important; border-radius: 12px 4px 12px 12px; }}
 .bubble-ai {{ background: #202c33 !important; color: #e9edef !important; border-radius: 4px 12px 12px 12px; }}
 .bubble-label {{ color: #8696a0 !important; font-size: 0.7rem; font-family: monospace; margin-bottom: 4px;}}
@@ -122,7 +155,7 @@ st.markdown(f"""
         <img src="data:image/png;base64,{logo_b64}" class="header-logo">
         <div class="header-title-box">
             <h1>PORTAL DE ATENDIMENTO</h1>
-            <p>Triagem de leads · IA WhatsApp · Powered by Groq + Llama 3.3</p>
+            <p>Triagem de leads · IA WhatsApp · Powered by Groq + Qwen 32B</p>
         </div>
     </div>
     <div style="background-color: {badge_bg}; border: 1px solid {badge_border}; color: {badge_color}; padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-family: monospace; font-weight: bold; white-space: nowrap;">
@@ -135,7 +168,7 @@ with st.popover("ℹ️ Sobre este Projeto"):
     st.markdown("""
     <div style="color: #333333; font-family: sans-serif; font-size: 0.95rem; padding: 5px;">
         <h3 style="color: #FF6A00; margin-top: 0; margin-bottom: 10px;">📦 Embalagio IA - Triagem & CRM</h3>
-        <p style="margin-bottom: 10px;">O <b>Embalagio IA</b> é um assistente virtual autônomo focado na qualificação de leads. Utilizando LLMs (Llama 3.3 via Groq) integrados ao n8n e hospedado no Railway, ele simula o atendimento via WhatsApp.</p>
+        <p style="margin-bottom: 10px;">O <b>Embalagio IA</b> é um assistente virtual autônomo focado na qualificação de leads. Utilizando LLMs (Qwen 32B via Groq) integrados ao n8n e hospedado no Railway, ele simula o atendimento via WhatsApp.</p>
         <p style="margin-bottom: 10px;">Ele interpreta mensagens, extrai dados (Nome, Categoria dinâmica e Quantidade) e alimenta um CRM no Google Sheets em tempo real, garantindo leads qualificados para o time comercial.</p>
         <p style="font-size: 0.70rem; border-top: 1px solid #ccc; padding-top: 10px; color: #666;">Desenvolvido com Python, Streamlit, n8n, Railway, Groq API e Google Sheets.</p>
     </div>
@@ -143,13 +176,13 @@ with st.popover("ℹ️ Sobre este Projeto"):
 
 st.write("")
 
-col1, col2 = st.columns([1, 2.2], gap="large")
+# Ajustado levemente a proporção para dar mais espaço ao chat no PC
+col1, col2 = st.columns([1.2, 2.2], gap="large")
 
 with col1:
-    chat_head_col1, chat_head_col2 = st.columns([5, 1.5], vertical_alignment="bottom")
-    chat_head_col1.markdown('<p class="brand-text" style="font-family: monospace; font-weight: bold; text-transform: uppercase; margin: 0 0 5px 0;">💬 Chat de Atendimento</p>', unsafe_allow_html=True)
+    st.markdown('<div style="position: relative; padding-bottom: 15px;"><p class="panel-title">💬 Chat de Atendimento</p></div>', unsafe_allow_html=True)
     
-    if chat_head_col2.button("🗑️ Limpar", type="secondary", use_container_width=True):
+    if st.button("🗑️ Limpar", type="secondary"):
         st.session_state.history = []
         st.session_state.status = None
         st.session_state.context_start_idx = 0
@@ -186,7 +219,7 @@ with col1:
         },
         "Inferência de Categoria (Inteligência)": {
             "msg": "Me chamo Ana. Preciso de 200 potes plásticos para salada.", 
-            "desc": "Testa se a IA enquadra um produto fora do padrão (potes plásticos) na categoria genérica 'Diversos' silenciosamente."
+            "desc": "Testa se a IA enquadra um produto fora do padrão (potes plásticos) na categoria genérica silenciosamente."
         },
         "Regra de Alta Quantidade (Segurança)": {
             "msg": "Bom dia. Queremos 5000 sacos de papel para pão. Aqui é a padaria Doce Pão.", 
@@ -286,7 +319,7 @@ with col1:
             st.markdown(f'<div style="color: #f87171; font-family: monospace; font-size: 0.85rem; font-weight: bold; margin-top: 10px;">✗ {msg}</div>', unsafe_allow_html=True)
 
 with col2:
-    st.markdown('<p class="brand-text" style="font-family: monospace; font-weight: bold; text-transform: uppercase; margin: 0 0 10px 0;">📊 CRM — Leads em Tempo Real</p>', unsafe_allow_html=True)
+    st.markdown('<div style="padding-bottom: 15px;"><p class="panel-title">📊 CRM — Leads em Tempo Real</p></div>', unsafe_allow_html=True)
     st.markdown(
         f'<div style="background-color: #0E2A3A; border: 2px solid #FF6A00; border-radius: 12px; overflow: hidden; line-height: 0;"><iframe src="{SHEET_EMBED}" width="100%" height="600" frameborder="0" style="border-radius: 10px;"></iframe></div>',
         unsafe_allow_html=True
