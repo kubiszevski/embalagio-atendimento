@@ -42,7 +42,7 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
     background: #FF7A1A !important; 
 }}
 
-/* Botões Secundários ("Sobre este Projeto" e "Limpar") */
+/* Botões Secundários */
 button[kind="secondary"] {{
     background-color: transparent !important;
     color: #f0f0f0 !important;
@@ -70,7 +70,7 @@ div[data-testid="stPopoverBody"] * {{
     color: #f0f0f0 !important; 
 }}
 
-/* Bordas Ativas nos campos de texto */
+/* Bordas Ativas */
 .stSelectbox div[data-baseweb="select"]:focus-within, 
 .stTextArea textarea:focus {{
     box-shadow: 0 0 0 2px #FF6A00 !important;
@@ -91,7 +91,7 @@ div[data-testid="stPopoverBody"] * {{
 .chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px; }}
 .msg-user {{ display: flex; justify-content: flex-end; }}
 .msg-ai   {{ display: flex; justify-content: flex-start; }}
-.bubble {{ max-width: 85%; padding: 10px 14px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; font-family: sans-serif; }}
+.bubble { max-width: 85%; padding: 10px 14px; font-size: 0.95rem; line-height: 1.4; word-break: normal; overflow-wrap: break-word; font-family: sans-serif; }
 .bubble-user {{ background: #005c4b !important; color: #e9edef !important; border-radius: 12px 4px 12px 12px; }}
 .bubble-ai {{ background: #202c33 !important; color: #e9edef !important; border-radius: 4px 12px 12px 12px; }}
 .bubble-label {{ color: #8696a0 !important; font-size: 0.7rem; font-family: monospace; margin-bottom: 4px;}}
@@ -123,12 +123,13 @@ if "history" not in st.session_state:
     st.session_state.history = []
 if "status" not in st.session_state:
     st.session_state.status = None
+if "context_start_idx" not in st.session_state:
+    st.session_state.context_start_idx = 0 # NOVO: Controla de onde a IA começa a ler
 
 def check_n8n():
     try:
-        r = requests.post(WEBHOOK_URL, json={"message": "__ping__"}, timeout=4)
+        r = requests.post(WEBHOOK_URL, json={"message": "__ping__", "history": []}, timeout=4)
         if r.status_code == 200:
-            r.json() 
             return True
         return False
     except:
@@ -164,7 +165,6 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 with st.popover("ℹ️ Sobre este Projeto"):
-    # Usando HTML inline para garantir que o texto fique escuro independente do tema do Streamlit
     st.markdown("""
     <div style="color: #333333; font-family: sans-serif; font-size: 0.95rem;">
         <h3 style="color: #FF6A00; margin-top: 0;">📦 Embalagio IA - Atendimento & CRM</h3>
@@ -189,6 +189,7 @@ with col1:
     chat_head_col1.markdown('<p class="brand-text" style="font-family: monospace; font-weight: bold; text-transform: uppercase; margin: 0;">💬 Chat de Atendimento</p>', unsafe_allow_html=True)
     if chat_head_col2.button("🗑️ Limpar", use_container_width=True):
         st.session_state.history = []
+        st.session_state.status = None
         st.rerun()
 
     msgs_html = ''
@@ -217,43 +218,70 @@ with col1:
 
     st.write("")
     opcoes_exemplos = [
-        "-- Digite livremente ou escolha um pedido --",
+        "Escolha um pedido rápido (Opcional):",
         "Oi, quero orçar 1000 caixas de hambúrguer tamanho G.",
         "Me chamo Ana. Preciso de 500 sacolas kraft P para minha loja.",
         "Olá! Quero pedir 300 caixas de pizza personalizadas, sou o Marcos.",
         "Bom dia. Queremos 2000 sacos de papel para pão. Aqui é a padaria Doce Pão."
     ]
-    escolha = st.selectbox("💡 Sugestões de pedidos rápidos:", opcoes_exemplos)
-    texto_padrao = escolha if escolha != opcoes_exemplos[0] else ""
+    escolha = st.selectbox("💡 Sugestões:", opcoes_exemplos)
+    
+    # Gerenciamento de estado para limpar o input
+    if "input_texto" not in st.session_state:
+        st.session_state.input_texto = ""
+        
+    def limpar_input():
+        st.session_state.input_texto = ""
 
-    user_input = st.text_area("Sua mensagem:", value=texto_padrao, height=80, placeholder="Digite seu pedido aqui...")
+    # Se o usuário escolher um exemplo, joga pra variável
+    texto_atual = escolha if escolha != opcoes_exemplos[0] else st.session_state.input_texto
+
+    user_input = st.text_area("Sua mensagem:", value=texto_atual, height=80, placeholder="Digite seu pedido aqui...", key="caixa_texto")
 
     if st.button("ENVIAR MENSAGEM ➜", use_container_width=True):
         if user_input.strip():
             st.session_state.history.append({"role": "user", "text": user_input.strip()})
+            
             with st.spinner("Processando Inteligência Artificial..."):
                 try:
-                    r = requests.post(WEBHOOK_URL, json={"message": user_input.strip()}, timeout=45)
+                    historico_ativo = st.session_state.history[st.session_state.context_start_idx:]
+                    payload = {"message": user_input.strip(), "history": historico_ativo}
+                    r = requests.post(WEBHOOK_URL, json=payload, timeout=45)
+                    
                     if r.status_code == 200:
                         try:
                             data = r.json()
-                            reply = data.get("Reply", data.get("reply", "Pedido recebido com sucesso!"))
+                            reply = data.get("Reply", data.get("reply", "Desculpe, não entendi."))
+                            status_ia = data.get("Status", data.get("status", "Complete"))
+                            
                             st.session_state.history.append({"role": "ai", "text": reply})
-                            st.session_state.status = ("ok", "Lead extraído e salvo no CRM")
+                            
+                            if status_ia == "Qualifying":
+                                st.session_state.status = ("info", "🤖 IA coletando dados faltantes...")
+                            else: 
+                                st.session_state.status = ("ok", "Lead qualificado e salvo no CRM!")
+                                st.session_state.context_start_idx = len(st.session_state.history)
+                                
                         except ValueError:
                             st.session_state.status = ("err", "Erro: n8n não retornou JSON válido.")
                     else:
                         st.session_state.status = ("err", f"Erro de comunicação: {r.status_code}")
                 except Exception as e:
                     st.session_state.status = ("err", "Sistema Offline ou Falha na Conexão.")
+            
+            # Limpa o texto usando a função callback e recarrega
+            limpar_input()
             st.rerun()
         else:
             st.warning("A mensagem não pode estar vazia.")
 
+    # Feedback visual dinâmico abaixo do botão
     if st.session_state.status:
         t, msg = st.session_state.status
         if t == "ok":
             st.markdown(f'<div style="color: #4ade80; font-family: monospace; font-size: 0.85rem; font-weight: bold; margin-top: 10px;">✓ {msg}</div>', unsafe_allow_html=True)
+        elif t == "info":
+            st.markdown(f'<div style="color: #60a5fa; font-family: monospace; font-size: 0.85rem; font-weight: bold; margin-top: 10px;">⟳ {msg}</div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div style="color: #f87171; font-family: monospace; font-size: 0.85rem; font-weight: bold; margin-top: 10px;">✗ {msg}</div>', unsafe_allow_html=True)
 
