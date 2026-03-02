@@ -224,36 +224,36 @@ with col1:
             "desc": ""
         },
         "Pedido Direto (Fluxo Ideal)": {
-            "msg": "Oi, sou o Marcos. Preciso de 500 caixas de pizza G com tampa laminada.", 
-            "desc": "Testa se a IA extrai os dados básicos e captura 'tampa laminada' como observação no Summary de primeira."
+            "msg": "Oi, sou o Marcos. Preciso de 500 caixas de pizza G.", 
+            "desc": "Testa a extração dos 3 dados básicos (Nome, Produto, Qtd) em um único passo."
         },
-        "Apenas Saudação (Receptividade)": {
+        "Apenas Saudação": {
             "msg": "Bom dia! Tudo bem?", 
-            "desc": "Cenário base para validar a saudação inicial e o Status: Qualifying."
+            "desc": "Testa se a IA mantém Status: Qualifying ao iniciar o contato humanizado."
         },
-        "Dados Faltantes: Nome (Coleta + Obs)": {
-            "msg": "Quero 1000 sacos kraft daqueles reforçados de 5kg.", 
-            "desc": "A IA deve notar o produto e o detalhe 'reforçados de 5kg', mas travar o envio para perguntar o nome."
+        "Dados Faltantes: Nome": {
+            "msg": "Quero 1000 sacos kraft.", 
+            "desc": "Valida se a IA retém o lead até o cliente informar o nome ou empresa."
         },
-        "Dados Faltantes: Quantidade (Coleta + Obs)": {
-            "msg": "Olá, meu nome é Júlia. Vocês vendem sacolas de papel personalizadas com logo?", 
-            "desc": "Valida se a IA entende a personalização como detalhe extra, mas solicita a quantidade para fechar o lead."
+        "Dados Faltantes: Quantidade": {
+            "msg": "Olá, meu nome é Júlia. Vocês vendem sacolas de papel?", 
+            "desc": "Valida se a IA solicita a quantidade necessária antes de finalizar o pedido."
         },
-        "Captura de Observações (Contexto)": {
-            "msg": "Me chamo Ana. Preciso de 200 potes plásticos para salada com divisória interna.", 
-            "desc": "Testa a precisão do Step 4 ao capturar 'para salada com divisória interna' sem tentar perguntar o tamanho do pote."
+        "Categorização Simples": {
+            "msg": "Me chamo Ana. Preciso de 200 potes plásticos.", 
+            "desc": "Testa a identificação direta do produto e nome sem interferência de detalhes técnicos."
         },
-        "Correção de Pedido (Contexto + Obs)": {
-            "msg": "Sou o Carlos. Quero 100 caixas de bolo brancas. Pensando bem, altera para 350 por favor.", 
-            "desc": "Verifica se a IA mantém a observação 'brancas' mesmo após o usuário alterar drasticamente a quantidade."
+        "Correção de Quantidade": {
+            "msg": "Sou o Carlos. Quero 100 caixas de bolo. Pensando bem, altera para 350 por favor.", 
+            "desc": "Testa se a IA ignora a informação antiga e registra o valor final corrigido."
         },
-        "Regra de Alta Quantidade (Segurança + Urgência)": {
-            "msg": "Bom dia. Queremos 5000 sacos de papel para pão. É para entrega urgente. Aqui é a padaria Doce Pão.", 
-            "desc": "Testa se a IA prioriza a trava de segurança (>1000) enquanto armazena a nota de 'entrega urgente'."
+        "Alta Quantidade (>1000)": {
+            "msg": "Bom dia. Queremos 5000 sacos de papel para pão. Aqui é a padaria Doce Pão.", 
+            "desc": "Aciona a trava de segurança para volumes altos, exigindo confirmação do cliente."
         },
-        "Fora de Escopo (Filtro de Lixo)": {
+        "Fora de Escopo (Filtro)": {
             "msg": "Boa tarde, sou o Pedro. Vocês consertam impressoras?", 
-            "desc": "Valida o Step 1.5: A IA deve ignorar qualquer observação e apenas desqualificar o lead (Status: Disqualified)."
+            "desc": "Testa o filtro de segurança que desqualifica (Status: Disqualified) pedidos fora do nicho."
         }
     }
 
