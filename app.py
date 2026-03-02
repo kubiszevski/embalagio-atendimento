@@ -31,7 +31,6 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
 
 .brand-text {{ color: #FF6A00 !important; }}
 
-/* Títulos das colunas */
 .panel-title {{
     color: #FF6A00;
     font-family: monospace;
@@ -41,7 +40,6 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
     font-size: 1.05rem;
 }}
 
-/* Botão Primário */
 button[kind="primary"] {{ 
     background: #FF6A00 !important; 
     color: #ffffff !important; 
@@ -55,7 +53,6 @@ button[kind="primary"]:hover {{
     background: #FF7A1A !important; 
 }}
 
-/* Botão Limpar (Layout e Responsividade corrigidos) */
 button[kind="secondary"] {{
     background: transparent !important;
     color: #8696a0 !important;
@@ -73,14 +70,13 @@ button[kind="secondary"]:hover {{
     background: rgba(255, 106, 0, 0.1) !important;
 }}
 
-/* Força o botão Limpar para a direita no Desktop, e centraliza/alinha nativo no mobile */
 div[data-testid="stButton"]:has(button[kind="secondary"]) {{
     display: flex;
     justify-content: flex-end;
 }}
 @media (max-width: 768px) {{
     div[data-testid="stButton"]:has(button[kind="secondary"]) {{
-        justify-content: center; /* Ficará centralizado bonitinho acima do chat no celular */
+        justify-content: center;
     }}
 }}
 
@@ -92,21 +88,19 @@ div[data-testid="stPopoverBody"] * {{ color: #333333 !important; }}
 .stSelectbox div[data-baseweb="select"]:focus-within, .stTextArea textarea:focus {{ box-shadow: 0 0 0 2px #FF6A00 !important; outline: none !important; }}
 
 .chat-panel {{ background-color: #0E2A3A; border: 1px solid #FF6A00; border-radius: 12px; padding: 15px; height: 400px; display: flex; flex-direction: column; }}
-.chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px; }}
+.chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column-reverse; gap: 12px; }}
 .msg-user {{ display: flex; justify-content: flex-end; }}
 .msg-ai   {{ display: flex; justify-content: flex-start; }}
 
-/* BOLHAS DE CHAT - Correção da quebra de linha */
 .bubble {{ 
     width: fit-content; 
-    min-width: min-content !important; /* Garante que a bolha tenha o tamanho mínimo da palavra */
+    min-width: min-content !important;
     max-width: 85%; 
     padding: 10px 14px; 
     border-radius: 12px;
     font-family: sans-serif; 
 }}
 
-/* Aplica regras restritas de quebra diretamente na tag <p> injetada pelo Streamlit */
 .bubble p {{
     margin: 0 !important;
     font-size: 0.95rem; 
@@ -192,16 +186,13 @@ with st.popover("ℹ️ Sobre este Projeto"):
 
 st.write("")
 
-# Layout principal
 col1, col2 = st.columns([1.2, 2.2], gap="large")
 
 with col1:
-    # Título e Botão
     c_title1, c_btn = st.columns([0.7, 0.3], vertical_alignment="center")
     with c_title1:
         st.markdown('<p class="panel-title">💬 Chat de Atendimento</p>', unsafe_allow_html=True)
     with c_btn:
-        # AQUI FOI REMOVIDO O use_container_width=True PARA FIXAR A LARGURA NO MOBILE
         if st.button("🗑️ Limpar", type="secondary"):
             st.session_state.history = []
             st.session_state.status = None
@@ -216,7 +207,7 @@ with col1:
         if not st.session_state.history:
             msgs_html = '<div class="chat-empty">Nenhuma mensagem ainda.<br/>Selecione um cenário de teste ou digite abaixo ↓</div>'
         else:
-            for m in st.session_state.history:
+            for m in reversed(st.session_state.history):
                 if m["role"] == "user":
                     msgs_html += f'<div class="msg-user"><div><div class="bubble-label bubble-label-right" style="text-align: right;">Você</div><div class="bubble bubble-user"><p>{m["text"]}</p></div></div></div>'
                 else:
@@ -334,7 +325,6 @@ with col1:
             st.markdown(f'<div style="color: #f87171; font-family: monospace; font-size: 0.85rem; font-weight: bold; margin-top: 10px;">✗ {msg}</div>', unsafe_allow_html=True)
 
 with col2:
-    # Coluna do CRM
     c_title2, c_empty = st.columns([0.7, 0.3], vertical_alignment="center")
     with c_title2:
         st.markdown('<p class="panel-title">📊 CRM — Leads em Tempo Real</p>', unsafe_allow_html=True)
