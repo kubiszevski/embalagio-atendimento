@@ -239,9 +239,9 @@ with col1:
             "msg": "Olá, meu nome é Júlia. Vocês vendem sacolas de papel?", 
             "desc": "Valida se a IA registra o nome e produto, mas solicita a quantidade antes de avançar para a finalização."
         },
-        "Captura de Detalhes (Step 4)": {
+        "Captura de Observações (Contexto)": {
             "msg": "Me chamo Ana. Preciso de 200 potes plásticos para salada.", 
-            "desc": "Testa se a IA extrai detalhes extras ('para salada') para o Summary sem travar o fluxo com perguntas técnicas de tamanho ou cor."
+            "desc": "Testa se a IA extrai detalhes extras ('para salada') para o Summary sem travar o fluxo com perguntas técnicas desnecessárias."
         },
         "Correção de Pedido (Contexto)": {
             "msg": "Sou o Carlos. Quero 100 caixas de bolo. Pensando bem, altera para 350 por favor.", 
@@ -249,11 +249,11 @@ with col1:
         },
         "Regra de Alta Quantidade (Segurança)": {
             "msg": "Bom dia. Queremos 5000 sacos de papel para pão. Aqui é a padaria Doce Pão.", 
-            "desc": "Aciona o Step 5: a IA identifica o volume alto (>1000) e solicita confirmação explícita antes de validar o lead."
+            "desc": "Aciona a trava de segurança: a IA identifica o volume alto (>1000) e solicita confirmação explícita antes de validar o lead."
         },
         "Fora de Escopo (Filtro de Lixo)": {
             "msg": "Boa tarde, sou o Pedro. Vocês consertam impressoras?", 
-            "desc": "Testa o Step 1.5: a IA deve desqualificar o pedido (Status: Disqualified) e não registrar 'lixo' no seu CRM."
+            "desc": "Testa o filtro de entrada: a IA deve desqualificar o pedido (Status: Disqualified) e NÃO registrar nada na sua planilha."
         }
     }
 
