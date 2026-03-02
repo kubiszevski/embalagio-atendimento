@@ -223,25 +223,25 @@ with col1:
             "msg": "", 
             "desc": ""
         },
-        "Atendimento Inicial": {
+        "Apenas Saudação": {
             "msg": "Bom dia! Tudo bem com vocês?", 
-            "desc": "Testa a recepção humanizada e a capacidade do assistente em solicitar proativamente os dados necessários para o pedido."
+            "desc": "Valida se o assistente inicia o atendimento de forma humanizada e solicita as informações necessárias para o pedido."
         },
         "Pedido de Caixas de Pizza": {
             "msg": "Oi, sou o Marcos. Preciso de 500 caixas de pizza G.", 
-            "desc": "Valida a extração imediata de nome, categoria e quantidade específica em uma única interação."
-        },
-        "Ajuste de Pedido em Tempo Real": {
-            "msg": "Sou o Carlos. Quero 100 caixas de bolo. Pensando bem, altera para 350 por favor.", 
-            "desc": "Avalia a inteligência do bot em processar mudanças de decisão durante a conversa e registrar apenas o dado final corrigido."
+            "desc": "Testa a extração imediata dos dados fundamentais (Nome, Produto e Quantidade) e a correta categorização do item."
         },
         "Filtro de Segurança e Escopo": {
             "msg": "Boa tarde, sou o Pedro. Vocês consertam impressoras?", 
-            "desc": "Verifica se o sistema identifica e bloqueia solicitações fora do catálogo de produtos, mantendo o CRM limpo de dados irrelevantes."
+            "desc": "Verifica se o sistema identifica e bloqueia solicitações fora do catálogo de produtos, mantendo o banco de dados limpo."
         },
-        "Pedido Corporativo Complexo": {
-            "msg": "Olá, aqui é a Renata do Buffet Real. Para o evento de sábado, vamos precisar de 3000 mini embalagens kraft para doces finos. Pode confirmar esse volume pra mim?", 
-            "desc": "O teste definitivo: avalia a extração de nomes compostos, limpeza de especificações técnicas e a trava de segurança para grandes volumes com confirmação integrada."
+        "Validação de Grande Volume": {
+            "msg": "Oi, sou a Renata. Quero 3000 mini embalagens kraft para doces.", 
+            "desc": "Demonstra o protocolo de segurança para volumes elevados (acima de 1000), onde a IA exige uma confirmação do cliente."
+        },
+        "Volume Alto com Confirmação": {
+            "msg": "Olá, aqui é a Renata. Queremos 3000 mini embalagens kraft, pode confirmar esse volume pra mim.", 
+            "desc": "Prova a inteligência do fluxo: se o cliente já autoriza o volume alto na mensagem inicial, o sistema reconhece e não solicita reconfirmação."
         }
     }
 
