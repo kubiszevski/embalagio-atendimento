@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import requests
 import base64
+import time
 
 WEBHOOK_URL = "https://n8n-production-adc8.up.railway.app/webhook/embalagio-atendimento"
 SHEET_EMBED  = "https://docs.google.com/spreadsheets/d/1QcAuW2CIVvVv03asnwpj32AvT6rXKV9FXwLdSHXWhiw/edit?usp=sharing"
@@ -169,9 +170,13 @@ with st.popover("ℹ️ Sobre este Projeto"):
         <p style="margin-bottom: 10px;">O <b>Embalagio IA</b> é um assistente virtual autônomo focado na qualificação de leads. Utilizando LLMs (Llama 3.3 via Groq) integrados ao n8n e hospedado no Railway, ele simula o atendimento via WhatsApp.</p>
         <p style="margin-bottom: 10px;">Ele interpreta mensagens, extrai dados (Nome, Categoria dinâmica e Quantidade) e alimenta um CRM no Google Sheets em tempo real, garantindo leads qualificados para o time comercial.</p>
         <p style="font-size: 0.70rem; border-top: 1px solid #ccc; padding-top: 10px; color: #666;">Desenvolvido com Python, Streamlit, n8n, Railway, Groq API e Google Sheets.</p>
-        <a href="[https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md](https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md)" target="_blank" style="color: #FF6A00; text-decoration: none; font-weight: normal; font-size: 0.75rem;">👉 Ler a Documentação no GitHub</a>
+        <a href="https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md" target="_blank" style="color: #FF6A00; text-decoration: none; font-weight: normal; font-size: 0.75rem;">👉 Ler a Documentação no GitHub</a>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Qualquer botão dentro de um popover força o recarregamento e fecha a janela nativamente
+    if st.button("❌ Fechar", use_container_width=True):
+        pass
 
 st.write("")
 
@@ -201,26 +206,19 @@ with col1:
     # Renderiza o chat
     st.markdown(f'<div class="chat-panel"><div class="chat-messages">{msgs_html}</div></div>', unsafe_allow_html=True)
     
-# Injeta JS para forçar o scroll da caixa de chat
+# Injeta JS dinâmico para garantir que o scroll da caixa de chat ocorra em 100% das vezes
     components.html(
-        """
+        f"""
         <script>
-            function scrollChat() {
-                const doc = window.parent.document;
-                const chatContainer = doc.querySelector('.chat-messages');
-                if (chatContainer) {
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                }
-            }
-            // Roda imediatamente e faz verificações extras para garantir que o React já renderizou as mensagens
-            scrollChat();
-            setTimeout(scrollChat, 100);
-            setTimeout(scrollChat, 300);
-            setTimeout(scrollChat, 600);
+            const chatContainer = window.parent.document.querySelector('.chat-messages');
+            if (chatContainer) {{
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }}
         </script>
         """,
         height=0, width=0
     )
+    
     st.write("")
     
     # --- NOVO MENU DE TESTES COM SELECTBOX ---
