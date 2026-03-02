@@ -24,7 +24,7 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
 
 .brand-text {{ color: #FF6A00 !important; }}
 
-.stButton > button {{ 
+button[kind="primary"] {{ 
     background: #FF6A00 !important; 
     color: #ffffff !important; 
     border: none !important; 
@@ -33,8 +33,23 @@ h1, h2, h3, h4, p, label, li, span {{ color: #f0f0f0; }}
     padding: 12px 0 !important;
     transition: all 0.3s ease;
 }}
-.stButton > button:hover {{ 
+button[kind="primary"]:hover {{ 
     background: #FF7A1A !important; 
+}}
+
+button[kind="secondary"] {{
+    background: transparent !important;
+    color: #8696a0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 0.85rem !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+}}
+button[kind="secondary"]:hover {{
+    color: #f0f0f0 !important;
+    background: transparent !important;
 }}
 
 div[data-testid="stPopoverBody"] * {{
@@ -71,26 +86,14 @@ div[data-testid="stPopoverBody"] * {{
 .chat-messages {{ flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px; }}
 .msg-user {{ display: flex; justify-content: flex-end; }}
 .msg-ai   {{ display: flex; justify-content: flex-start; }}
-.bubble {{ max-width: 85%; padding: 10px 14px; font-size: 0.95rem; line-height: 1.4; word-break: normal; overflow-wrap: break-word; font-family: sans-serif; }}
+.bubble {{ width: fit-content; max-width: 85%; padding: 10px 14px; font-size: 0.95rem; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; font-family: sans-serif; }}
 .bubble-user {{ background: #005c4b !important; color: #e9edef !important; border-radius: 12px 4px 12px 12px; }}
 .bubble-ai {{ background: #202c33 !important; color: #e9edef !important; border-radius: 4px 12px 12px 12px; }}
 .bubble-label {{ color: #8696a0 !important; font-size: 0.7rem; font-family: monospace; margin-bottom: 4px;}}
 .chat-empty {{ color: #8696a0 !important; text-align: center; font-family: monospace; font-size: 0.85rem; margin-top: auto; margin-bottom: auto; }}
 
-button[kind="secondary"] {{
-    background-color: transparent !important;
-    color: #f0f0f0 !important;
-    border: 1px solid #FF6A00 !important;
-}}
-button[kind="secondary"]:hover, button[kind="secondary"]:focus, button[kind="secondary"]:active {{
-    background-color: #0E2A3A !important;
-    color: #FF6A00 !important;
-    border: 1px solid #FF6A00 !important;
-    box-shadow: none !important;
-}}
-
-#MainMenu, footer, header {{ visibility: hidden; }}
-.block-container {{ padding-top: 1rem !important; max-width: 1200px; }}
+header {{ visibility: hidden; }}
+.block-container {{ padding-top: 1rem !important; max-width: 1400px; }}
 
 .header-container {{
     display: flex; justify-content: space-between; align-items: center; 
@@ -100,13 +103,6 @@ button[kind="secondary"]:hover, button[kind="secondary"]:focus, button[kind="sec
 .header-logo {{ width: 140px; border-radius: 8px; }}
 .header-title-box h1 {{ color: #FF6A00; font-size: 1.5rem; margin: 0; font-weight: 900; line-height: 1.2; }}
 .header-title-box p {{ color: #888; font-size: 0.85rem; margin: 0; font-family: monospace; }}
-
-@media (max-width: 768px) {{
-    .header-left {{ gap: 12px; }}
-    .header-logo {{ width: 90px; }}
-    .header-title-box h1 {{ font-size: 1.1rem; }}
-    .header-title-box p {{ font-size: 0.65rem; }}
-}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -150,25 +146,25 @@ st.markdown(f"""
 with st.popover("ℹ️ Sobre este Projeto"):
     st.markdown("""
     <div style="text-align: left; margin-bottom: 10px;">
-        <button onclick="window.parent.document.body.dispatchEvent(new MouseEvent('mousedown', {bubbles:true}));" style="background: transparent; border: none; color: #888; font-size: 1.2rem; cursor: pointer; padding: 0;">✕</button>
+        <button onclick="window.parent.document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));" style="background: transparent; border: none; color: #888; font-size: 1.1rem; cursor: pointer; padding: 0; font-family: sans-serif;">X</button>
     </div>
     <div style="color: #333333; font-family: sans-serif; font-size: 0.95rem;">
         <h3 style="color: #FF6A00; margin-top: 0; margin-bottom: 10px;">📦 Embalagio IA - Triagem & CRM</h3>
         <p style="margin-bottom: 10px;">O <b>Embalagio IA</b> é um assistente virtual autônomo focado na qualificação de leads. Utilizando LLMs (Llama 3.3 via Groq) integrados ao n8n e hospedado no Railway, ele simula o atendimento via WhatsApp.</p>
         <p style="margin-bottom: 10px;">Ele interpreta mensagens, extrai dados (Nome, Categoria dinâmica e Quantidade) e alimenta um CRM no Google Sheets em tempo real, garantindo leads qualificados para o time comercial.</p>
         <p style="font-size: 0.70rem; border-top: 1px solid #ccc; padding-top: 10px; color: #666;">Desenvolvido com Python, Streamlit, n8n, Railway, Groq API e Google Sheets.</p>
-        <a href="https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md" target="_blank" style="color: #FF6A00; text-decoration: none; font-weight: normal; font-size: 0.75rem;">👉 Ler a Documentação no GitHub</a>
     </div>
     """, unsafe_allow_html=True)
 
 st.write("")
 
-col1, col2 = st.columns([1, 1.3], gap="large")
+col1, col2 = st.columns([1, 1.6], gap="large")
 
 with col1:
     chat_head_col1, chat_head_col2 = st.columns([4, 1], vertical_alignment="center")
     chat_head_col1.markdown('<p class="brand-text" style="font-family: monospace; font-weight: bold; text-transform: uppercase; margin: 0;">💬 Chat de Atendimento</p>', unsafe_allow_html=True)
-    if chat_head_col2.button("🗑️ Limpar", use_container_width=True):
+    
+    if chat_head_col2.button("Limpar Chat", type="secondary", use_container_width=True):
         st.session_state.history = []
         st.session_state.status = None
         st.session_state.context_start_idx = 0
@@ -241,7 +237,7 @@ with col1:
 
     st.text_area("Sua mensagem:", key="caixa_texto", height=80, placeholder="Digite seu pedido aqui...")
 
-    if st.button("ENVIAR MENSAGEM ➜", use_container_width=True, on_click=preparar_envio):
+    if st.button("ENVIAR MENSAGEM ➜", type="primary", use_container_width=True, on_click=preparar_envio):
         msg = st.session_state.texto_enviado.strip()
         if msg:
             st.session_state.history.append({"role": "user", "text": msg})
@@ -299,9 +295,9 @@ st.image("workflow_n8n.png", use_container_width=True)
 
 st.markdown("""
 <div style="text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid #1a3c54;">
-    <p style="color: #888; font-size: 0.85rem; font-family: monospace; margin-bottom: 8px;">
-        &lt;/&gt; Sistema de Triagem Automatizada | Desenvolvido por <b>Emmanuel</b>
+    <a href="https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md" target="_blank" style="color: #d1d5db; text-decoration: none; font-size: 0.9rem; font-family: monospace; display: inline-block; margin-bottom: 12px; border: 1px solid #4ade80; padding: 6px 16px; border-radius: 6px;">📖 Ver Documentação Completa no GitHub</a>
+    <p style="color: #888; font-size: 0.85rem; font-family: monospace; margin-bottom: 0;">
+        Sistema de Triagem Automatizada | Desenvolvido por <b>Emmanuel</b>
     </p>
-    <a href="https://github.com/kubiszevski/embalagio-atendimento/blob/main/README.md" target="_blank" style="color: #888; text-decoration: underline; font-weight: bold; font-size: 0.85rem; font-family: monospace;">📖 Ver Documentação (README)</a>
 </div>
 """, unsafe_allow_html=True)
