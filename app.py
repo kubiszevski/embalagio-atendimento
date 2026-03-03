@@ -13,13 +13,12 @@ except KeyError:
 
 st.set_page_config(page_title="Embalagio CRM", page_icon="📦", layout="wide")
 
-# --- 2. FUNÇÕES COM TRATAMENTO DE ERRO MELHORADO ---
 def get_img_as_base64(file_path):
     try:
         with open(file_path, 'rb') as f:
             return base64.b64encode(f.read()).decode()
     except Exception:
-        return "" # Retorna vazio silenciosamente se não achar a logo
+        return "" 
 
 logo_b64 = get_img_as_base64("logo_embalagio.png")
 
@@ -29,10 +28,8 @@ def check_n8n():
         r = requests.post(WEBHOOK_URL, json={"message": "__ping__", "history": ""}, timeout=4)
         return r.status_code == 200
     except requests.exceptions.RequestException:
-        # Evita que o app quebre se o n8n estiver offline
         return False
 
-# --- 3. CSS E LAYOUT ---
 st.markdown(f"""
 <style>
 #MainMenu {{ visibility: hidden; }}
@@ -152,7 +149,6 @@ div[data-testid="stPopoverBody"] * {{ color: #333333 !important; }}
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. GESTÃO DE ESTADO (SESSION STATE) ---
 if "history" not in st.session_state:
     st.session_state.history = []
 if "status" not in st.session_state:
@@ -164,7 +160,6 @@ if "caixa_texto" not in st.session_state:
 if "texto_enviado" not in st.session_state:
     st.session_state.texto_enviado = ""
 
-# --- 5. INTERFACE DO USUÁRIO ---
 n8n_online = check_n8n()
 badge_bg, badge_border, badge_color, badge_text = ("#0d2b1a", "#1a5c35", "#4ade80", "● SISTEMA ATIVO") if n8n_online else ("#2b0d0d", "#5c1a1a", "#f87171", "○ SISTEMA OFFLINE")
 
@@ -283,10 +278,8 @@ with col1:
                     if r.status_code == 200:
                         raw_text = r.text
                         try:
-                            # 1. Limpeza preventiva de blocos markdown
                             clean_text = raw_text.replace("```json", "").replace("```", "").strip()
                             
-                            # 2. Extração do JSON
                             match = re.search(r'(\{.*\})', clean_text, re.DOTALL)
                             if match:
                                 clean_json = match.group(1)
