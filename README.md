@@ -66,28 +66,38 @@ Para rodar a interface Streamlit na sua máquina e conectá-la a um backend n8n 
 ### Passos
 
 1. **Clone o repositório:**
-   ```
-   git clone https://github.com/kubiszevski/embalagio-atendimento.git https://github.com/kubiszevski/embalagio-atendimento.git
-   cd embalagio-atendimento
-   ```
+```bash
+git clone [https://github.com/kubiszevski/embalagio-atendimento.git](https://github.com/kubiszevski/embalagio-atendimento.git)
+cd embalagio-atendimento
+
+```
 
 2. **Configure as Variáveis de Ambiente:**
-Crie um arquivo .env na raiz do projeto com as seguintes chaves:
-```
+Crie um arquivo `.env` na raiz do projeto com as seguintes chaves:
+
+```env
 GROQ_API_KEY=sua_chave_api_da_groq_aqui
 WEBHOOK_URL=url_de_producao_do_seu_webhook_n8n
+
 ```
 
 3. **Instale as dependências:**
-```
+
+```bash
 pip install -r requirements.txt
+
 ```
 
 4. **Inicie a aplicação:**
-```
+
+```bash
 streamlit run app.py
+
 ```
 
+---
+
 ## 👨‍💻 Autor
-Desenvolvido por Emmanuel.
+
+Desenvolvido por **Emmanuel**.
 Engenharia de Prompts e Automação de Processos focado em otimização de fluxos comerciais.
