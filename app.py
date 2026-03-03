@@ -4,6 +4,7 @@ import base64
 import re
 import json
 
+# --- 1. CONFIGURAÇÃO DE SEGURANÇA (SECRETS) ---
 try:
     WEBHOOK_URL = st.secrets["WEBHOOK_URL"]
     SHEET_EMBED = st.secrets["SHEET_EMBED"]
@@ -13,15 +14,26 @@ except KeyError:
 
 st.set_page_config(page_title="Embalagio CRM", page_icon="📦", layout="wide")
 
+# --- 2. FUNÇÕES COM TRATAMENTO DE ERRO MELHORADO ---
 def get_img_as_base64(file_path):
     try:
         with open(file_path, 'rb') as f:
             return base64.b64encode(f.read()).decode()
-    except:
-        return ""
+    except Exception:
+        return "" # Retorna vazio silenciosamente se não achar a logo
 
 logo_b64 = get_img_as_base64("logo_embalagio.png")
 
+@st.cache_data(ttl=30)
+def check_n8n():
+    try:
+        r = requests.post(WEBHOOK_URL, json={"message": "__ping__", "history": ""}, timeout=4)
+        return r.status_code == 200
+    except requests.exceptions.RequestException:
+        # Evita que o app quebre se o n8n estiver offline
+        return False
+
+# --- 3. CSS E LAYOUT ---
 st.markdown(f"""
 <style>
 #MainMenu {{ visibility: hidden; }}
@@ -141,6 +153,7 @@ div[data-testid="stPopoverBody"] * {{ color: #333333 !important; }}
 </style>
 """, unsafe_allow_html=True)
 
+# --- 4. GESTÃO DE ESTADO (SESSION STATE) ---
 if "history" not in st.session_state:
     st.session_state.history = []
 if "status" not in st.session_state:
@@ -152,14 +165,7 @@ if "caixa_texto" not in st.session_state:
 if "texto_enviado" not in st.session_state:
     st.session_state.texto_enviado = ""
 
-@st.cache_data(ttl=30)
-def check_n8n():
-    try:
-        r = requests.post(WEBHOOK_URL, json={"message": "__ping__", "history": ""}, timeout=4)
-        return r.status_code == 200
-    except:
-        return False
-
+# --- 5. INTERFACE DO USUÁRIO ---
 n8n_online = check_n8n()
 badge_bg, badge_border, badge_color, badge_text = ("#0d2b1a", "#1a5c35", "#4ade80", "● SISTEMA ATIVO") if n8n_online else ("#2b0d0d", "#5c1a1a", "#f87171", "○ SISTEMA OFFLINE")
 
@@ -223,34 +229,13 @@ with col1:
     st.write("")
     
     testes_opcoes = {
-        "Digite livremente ou escolha um cenário de teste": {
-            "msg": "", 
-            "desc": ""
-        },
-        "Saudação": {
-            "msg": "Bom dia! Tudo bem com vocês?", 
-            "desc": "Valida se o assistente inicia o atendimento de forma humanizada e solicita as informações necessárias para o pedido."
-        },
-        "Pedido de Caixas de Pizza": {
-            "msg": "Oi, sou o Marcos. Preciso de 500 caixas de pizza G.", 
-            "desc": "Testa a extração imediata dos dados fundamentais (Nome, Produto e Quantidade) e a correta categorização do item."
-        },
-        "Pedido Personalizado": {
-            "msg": "Olá, sou a Patrícia da Doce Arte. Preciso de 150 sacolas de papel kraft azul marinho com alça de cetim branca para kits de presente.", 
-            "desc": "Avalia a precisão da IA em processar um pedido com detalhes de cor e uso específico em uma única frase."
-        },
-        "Filtro de Segurança e Escopo": {
-            "msg": "Boa tarde, sou o Pedro. Vocês consertam impressoras?", 
-            "desc": "Verifica se o sistema identifica e bloqueia solicitações fora do catálogo de produtos, mantendo o banco de dados limpo."
-        },
-        "Validação de Grande Volume": {
-            "msg": "Oi, sou a Renata. Quero 3000 mini embalagens kraft para doces.", 
-            "desc": "Demonstra o protocolo de segurança obrigatório: para qualquer pedido acima de 1000 unidades, o sistema pausa para solicitar uma confirmação humana."
-        },
-        "Confirmação de Segurança Explicita": {
-            "msg": "Olá, aqui é a Renata. Queremos 3000 mini embalagens kraft, pode confirmar esse volume pra mim.", 
-            "desc": "Valida o rigor do sistema: mesmo que o cliente peça para confirmar na primeira mensagem, a IA cumpre o protocolo e solicita uma resposta afirmativa dedicada."
-        }
+        "Digite livremente ou escolha um cenário de teste": {"msg": "", "desc": ""},
+        "Saudação": {"msg": "Bom dia! Tudo bem com vocês?", "desc": "Valida se o assistente inicia o atendimento de forma humanizada e solicita as informações necessárias para o pedido."},
+        "Pedido de Caixas de Pizza": {"msg": "Oi, sou o Marcos. Preciso de 500 caixas de pizza G.", "desc": "Testa a extração imediata dos dados fundamentais (Nome, Produto e Quantidade) e a correta categorização do item."},
+        "Pedido Personalizado": {"msg": "Olá, sou a Patrícia da Doce Arte. Preciso de 150 sacolas de papel kraft azul marinho com alça de cetim branca para kits de presente.", "desc": "Avalia a precisão da IA em processar um pedido com detalhes de cor e uso específico em uma única frase."},
+        "Filtro de Segurança e Escopo": {"msg": "Boa tarde, sou o Pedro. Vocês consertam impressoras?", "desc": "Verifica se o sistema identifica e bloqueia solicitações fora do catálogo de produtos, mantendo o banco de dados limpo."},
+        "Validação de Grande Volume": {"msg": "Oi, sou a Renata. Quero 3000 mini embalagens kraft para doces.", "desc": "Demonstra o protocolo de segurança obrigatório: para qualquer pedido acima de 1000 unidades, o sistema pausa para solicitar uma confirmação humana."},
+        "Confirmação de Segurança Explicita": {"msg": "Olá, aqui é a Renata. Queremos 3000 mini embalagens kraft, pode confirmar esse volume pra mim.", "desc": "Valida o rigor do sistema: mesmo que o cliente peça para confirmar na primeira mensagem, a IA cumpre o protocolo e solicita uma resposta afirmativa dedicada."}
     }
 
     def on_select_change():
@@ -299,7 +284,11 @@ with col1:
                     if r.status_code == 200:
                         raw_text = r.text
                         try:
-                            match = re.search(r'(\{.*\})', raw_text, re.DOTALL)
+                            # 1. Limpeza preventiva de blocos markdown
+                            clean_text = raw_text.replace("```json", "").replace("```", "").strip()
+                            
+                            # 2. Extração do JSON
+                            match = re.search(r'(\{.*\})', clean_text, re.DOTALL)
                             if match:
                                 clean_json = match.group(1)
                                 data = json.loads(clean_json)
@@ -319,6 +308,8 @@ with col1:
                                 st.session_state.history.append({"role": "ai", "text": f"⚠️ ERRO DE FORMATO. O modelo respondeu assim: {texto_debug}"})
                                 st.session_state.status = ("err", "🤖 IA não gerou o JSON esperado.")
                                 
+                        except json.JSONDecodeError as e:
+                            st.session_state.status = ("err", f"Erro ao decodificar JSON.")
                         except Exception as e:
                             st.session_state.status = ("err", f"Erro crítico no Python: {str(e)}")
                     else:
