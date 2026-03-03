@@ -3,12 +3,16 @@ import requests
 import base64
 import re
 import json
+import os
+from dotenv import load_dotenv
 
-try:
-    WEBHOOK_URL = st.secrets["WEBHOOK_URL"]
-    SHEET_EMBED = st.secrets["SHEET_EMBED"]
-except KeyError:
-    st.error("error WEBHOOK_URL e SHEET_EMBED - .streamlit/secrets.toml")
+load_dotenv()
+
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+SHEET_EMBED = os.getenv("SHEET_EMBED")
+
+if not WEBHOOK_URL or not SHEET_EMBED:
+    st.error("Erro: WEBHOOK_URL ou SHEET_EMBED não foram encontrados no arquivo .env!")
     st.stop()
 
 st.set_page_config(page_title="Embalagio CRM", page_icon="📦", layout="wide")
